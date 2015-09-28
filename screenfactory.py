@@ -1,10 +1,14 @@
 # Use this to switch between virtual and LED screen for examples
-use_virtual_screen = True
+screen_to_use = 'console'
+
 
 def create_screen():
-	if use_virtual_screen:
-		from screen.virtualscreen import VirtualScreen
-		return VirtualScreen()
-	else:
-		from screen.screen import Screen
-		return Screen()
+    if screen_to_use == 'virtual':
+        from screen.virtualscreen import VirtualScreen
+        return VirtualScreen()
+    elif screen_to_use == 'console':
+        from screen.consolescreen import ConsoleScreen
+        return ConsoleScreen()
+    else:
+        from screen.screen import Screen
+        return Screen()

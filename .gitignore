@@ -1,3 +1,5 @@
-animations/
+animations
 other/
 *.pyc
+.idea
+neopixel.py
