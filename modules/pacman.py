@@ -63,7 +63,7 @@ class Ghost(object):
         return p
 
     def get_destination(self):
-        if self.destination != None and self.destination != self.pos:
+        if self.destination is not None and self.destination != self.pos:
             return self.destination
 
         if self.mode == self.CHASE:
@@ -93,11 +93,11 @@ class Ghost(object):
         direction_map = self.game.get_direction_map(self.get_destination(), self.mode == self.FLEE)
         direction = direction_map[self.pos.x][self.pos.y]
         old = self.pos
-        if (direction != None):
+        if direction != None:
             self.pos = Point((self.pos.x + direction.x + 16) % 16, (self.pos.y + direction.y + 16) % 16)
 
     def next_mode_is_due(self):
-        return ((self.next_mode != None and self.next_mode < time.clock())
+        return ((self.next_mode is not None and self.next_mode < time.clock())
                 or (self.mode == self.GOHOME and self.pos == self.home))
 
     def tick(self):

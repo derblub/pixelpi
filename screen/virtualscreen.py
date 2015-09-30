@@ -12,7 +12,7 @@ class VirtualScreen:
         self.width = width
         self.height = height
 
-        self.pixel_size = 5
+        self.pixel_size = 15
 
         self.pixel = [[(0, 0, 0) for y in range(height)] for x in range(width)]
 

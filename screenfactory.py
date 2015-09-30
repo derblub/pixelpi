@@ -1,5 +1,5 @@
 # Use this to switch between virtual and LED screen for examples
-screen_to_use = 'console'
+screen_to_use = 'virtual'
 
 
 def create_screen():

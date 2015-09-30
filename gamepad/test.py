@@ -14,9 +14,9 @@ class _Getch:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-    def get():
+    def get(self):
         inkey = _Getch()
-        while (1):
+        while 1:
             k = inkey()
             if k != '': break
         if k == '\x1b[A':
@@ -30,10 +30,10 @@ class _Getch:
         else:
             print "not an arrow key!"
 
-    def main():
+    def main(self):
         while True:
-            get()
+            self.get(self)
 
 
 if __name__ == '__main__':
-    main()
+    _Getch.main()
