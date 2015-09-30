@@ -4,7 +4,6 @@ import math
 from menu.menuitems import menu_items
 from screenfactory import create_screen
 from gamepadfactory import create_gamepad
-import pygame
 from gamepad.virtualgamepad import *
 from helpers import *
 
@@ -36,7 +35,7 @@ class Menu(object):
             for pixel in range(size):
                 source = Point(int(pixel / zoom), int(line / zoom))
                 target = Point(int(x - size * 0.5 + pixel), int(y - size * 0.5 + line))
-                if target.x >= 0 and target.x < 16 and target.y >= 0 and target.y < 16:
+                if 0 <= target.x < 16 and 0 <= target.y < 16:
                     c = graphic[source.x][source.y]
                     self.screen.pixel[target.x][target.y] = Color(c.r * self.brightness, c.g * self.brightness,
                                                                   c.b * self.brightness)
@@ -51,7 +50,7 @@ class Menu(object):
                                                                                            80 * self.brightness)
 
     def draw(self):
-        if self.module != None:
+        if self.module is not None:
             return
 
         self.screen.clear()
@@ -69,10 +68,10 @@ class Menu(object):
         return x
 
     def tick(self):
-        if (self.dir != 0):
+        if self.dir != 0:
             self.offset = self.dir * self.ease((1 - (time.clock() - self.start) / (self.end - self.start)))
 
-            if (time.clock() > self.end):
+            if time.clock() > self.end:
                 self.offset = 0
                 self.dir = 0
 
@@ -88,7 +87,7 @@ class Menu(object):
         self.end = self.start + 0.3
 
     def on_key_down(self, key):
-        if self.module != None:
+        if self.module is not None:
             if key == 10:
                 self.stop()
             return

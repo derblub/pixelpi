@@ -1,33 +1,33 @@
 from thread import start_new_thread
-from helpers import *
+
 
 class Module(object):
-	def __init__(self, screen, autoplay = True):
-		self.screen = screen
-		self.running = False
+    def __init__(self, screen, autoplay=True):
+        self.screen = screen
+        self.running = False
 
-	def tick(self):
-		raise Exception("All modules must implement tick")
+    def tick(self):
+        raise Exception("All modules must implement tick")
 
-	def run(self):
-		while self.running:
-			self.tick()
+    def run(self):
+        while self.running:
+            self.tick()
 
-	def start(self):
-		if self.running:
-			return
-		
-		self.running = True
-		start_new_thread(self.run, ())
+    def start(self):
+        if self.running:
+            return
 
-		self.on_start()
- 		
-	def stop(self):
-		self.running = False
-		self.on_stop()
+        self.running = True
+        start_new_thread(self.run, ())
 
-	def on_start(self):
-		pass
+        self.on_start()
 
-	def on_stop(self):
-		pass
+    def stop(self):
+        self.running = False
+        self.on_stop()
+
+    def on_start(self):
+        pass
+
+    def on_stop(self):
+        pass

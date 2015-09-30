@@ -8,6 +8,6 @@ gamepad = create_gamepad()
 
 snake = Snake(screen, gamepad)
 while True:
-	pygame.time.wait(10)
-	for event in pygame.event.get():
-		instance.consume_event(event)
+    pygame.time.wait(10)
+    for event in pygame.event.get():
+        instance.consume_event(event)
