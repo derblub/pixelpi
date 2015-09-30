@@ -16,7 +16,8 @@ class Cycle(Module):
         self.interval = interval
 
     def load_subfolders(self, location):
-        if location[:1] != '/':
+
+        if not location.endswith('/'):
             location += '/'
 
         if not os.path.exists(location):

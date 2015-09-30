@@ -12,7 +12,8 @@ class Animation(Module):
     def __init__(self, screen, folder, interval=None, autoplay=True):
         super(Animation, self).__init__(screen)
 
-        if folder[:-1] != '/':
+        self.frames = []
+        if not folder.endswith('/'):
             folder += '/'
 
         self.folder = folder
@@ -33,12 +34,12 @@ class Animation(Module):
             raise
 
         self.screen.update()
+        self.config = self.load_config()
 
         if interval is None:
             try:
-                self.interval = self.load_interval()
-            except:
-                print('No interval info found.')
+                self.interval = self.config['animation']['hold']
+            except KeyError:
                 self.interval = 100
         else:
             self.interval = interval
@@ -53,6 +54,7 @@ class Animation(Module):
         while os.path.isfile(self.folder + str(i) + '.bmp'):
             try:
                 bmp = pygame.image.load(self.folder + str(i) + '.bmp')
+
             except Exception:
                 print('Error loading ' + str(i) + '.bmp from ' + self.folder)
                 raise
@@ -67,7 +69,6 @@ class Animation(Module):
         return os.path.isfile(self.folder + '0.bmp') and not os.path.isfile(self.folder + '1.bmp')
 
     def load_single(self):
-        self.frames = []
         bmp = pygame.image.load(self.folder + '0.bmp')
         framecount = bmp.get_height() / 16
         arr = pygame.PixelArray(bmp)
@@ -76,10 +77,18 @@ class Animation(Module):
             frame = [[int_to_color(arr[x, y + 16 * index]) for y in range(16)] for x in range(16)]
             self.frames.append(frame)
 
-    def load_interval(self):
+    def load_config(self):
         cfg = ConfigParser.ConfigParser()
-        cfg.read(self.folder + 'config.ini')
-        return cfg.getint('animation', 'hold')
+        try:
+            cfg.read(self.folder + 'config.ini')
+            to_return = {
+                'animation': dict(cfg.items('animation')),
+                'translate': dict(cfg.items('translate'))
+            }
+        except ConfigParser.NoSectionError:
+            to_return = {}
+
+        return to_return
 
     def tick(self):
         self.pos += 1
@@ -90,7 +99,7 @@ class Animation(Module):
         time.sleep(self.interval / 1000.0)
 
     def on_start(self):
-        print('Starting ' + self.folder)
+        print('\033[38;5;39mplaying \033[38;5;82m' + self.folder + '\033[0m')
 
     def play_once(self):
         for frame in self.frames:

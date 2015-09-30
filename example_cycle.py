@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pygame
 
 from modules.cycle import Cycle
@@ -5,7 +6,7 @@ from screenfactory import create_screen
 
 screen = create_screen()
 
-cycle = Cycle(screen, 'animations')
+cycle = Cycle(screen, "animations/")
 cycle.start()
 
 while True:
