@@ -1,9 +1,17 @@
 from neopixel import *
 
+import settings as s
+
 
 class Screen:
-    def __init__(self, width=16, height=16, led_pin=18, led_freq_hz=800000, led_dma=5, led_invert=False,
-                 led_brightness=200):
+    def __init__(self,
+                 width=s.MATRIX_WIDTH,
+                 height=s.MATRIX_HEIGHT,
+                 led_pin=s.LED_PIN,
+                 led_freq_hz=s.LED_FREQ,
+                 led_dma=s.LED_DMA,
+                 led_invert=s.LED_INVERT,
+                 led_brightness=s.BRIGHTNESS):
         self.width = width
         self.height = height
 

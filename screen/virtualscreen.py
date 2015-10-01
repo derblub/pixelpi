@@ -1,16 +1,16 @@
 import collections
 import pygame
+import settings as s
 
 Color = collections.namedtuple('Color', 'r g b')
 
 
 # Behaves like the actual LED screen, but shows the screen content on a computer screen
 class VirtualScreen:
-    def __init__(self, width=16, height=16, led_pin=18, led_freq_hz=800000, led_dma=5, led_invert=False,
-                 led_brightness=200):
+    def __init__(self, width=s.MATRIX_WIDTH, height=s.MATRIX_HEIGHT):
         self.width = width
         self.height = height
-        self.pixel_size = 15
+        self.pixel_size = s.PIXEL_SIZE
 
         self.pixel = [[(0, 0, 0) for y in range(height)] for x in range(width)]
 

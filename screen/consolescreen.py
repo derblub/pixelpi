@@ -1,12 +1,13 @@
 import collections
 import libs.image2ansi as image_to_ansi
 import pygame
+import settings as s
 
 Color = collections.namedtuple('Color', 'r g b')
 
 
 class ConsoleScreen:
-    def __init__(self, width=16, height=16):
+    def __init__(self, width=s.MATRIX_WIDTH, height=s.MATRIX_HEIGHT):
         self.width = width
         self.height = height
         self.pixel = [[Color(0, 0, 0) for y in range(height)] for x in range(width)]
