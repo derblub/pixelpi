@@ -1,5 +1,4 @@
 import collections
-
 import pygame
 
 Color = collections.namedtuple('Color', 'r g b')
@@ -11,7 +10,6 @@ class VirtualScreen:
                  led_brightness=200):
         self.width = width
         self.height = height
-
         self.pixel_size = 15
 
         self.pixel = [[(0, 0, 0) for y in range(height)] for x in range(width)]
@@ -28,8 +26,16 @@ class VirtualScreen:
     def update(self):
         for y in range(self.height):
             for x in range(self.width):
-                pygame.draw.rect(self.surface, self.pixel[x][y], (
-                (x * self.pixel_size, y * self.pixel_size), (((x + 1) * self.pixel_size), (y + 1) * self.pixel_size)))
+                pygame.draw.rect(
+                    self.surface,
+                    self.pixel[x][y],
+                    (
+                        x * self.pixel_size,
+                        y * self.pixel_size,
+                        (x + 1) * self.pixel_size,
+                        (y + 1) * self.pixel_size
+                    )
+                )
 
         self.screen.blit(self.surface, (0, 0))
         pygame.display.flip()

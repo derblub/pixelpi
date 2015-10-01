@@ -19,6 +19,15 @@ class Animation(Module):
         self.folder = folder
         self.screen = screen
 
+        self.imageWidth = 0
+        self.imageHeight = 0
+        self.offsetSpeedX = 0  # number of pixels to  x-translate each frame
+        self.offsetSpeedY = 0  # number of pixels to y-translate each frame
+        self.offsetX = 0  # for translating images x pixels
+        self.offsetY = 0  # for translating images y pixels
+
+        self.holdTime = 200  # millisecods to hold each .bmp frame
+
         try:
             if self.is_single_file():
                 self.load_single()
@@ -38,9 +47,9 @@ class Animation(Module):
 
         if interval is None:
             try:
-                self.interval = self.config['animation']['hold']
+                self.interval = int(self.config['animation']['hold'])
             except KeyError:
-                self.interval = 100
+                self.interval = self.holdTime
         else:
             self.interval = interval
 
@@ -59,9 +68,10 @@ class Animation(Module):
                 print('Error loading ' + str(i) + '.bmp from ' + self.folder)
                 raise
             arr = pygame.PixelArray(bmp)
+            self.imageWidth = bmp.get_width()
+            self.imageHeight = bmp.get_height()
 
-            frame = [[int_to_color(arr[x, y]) for y in range(16)] for x in range(16)]
-            self.frames.append(frame)
+            self.build_frame(arr)
 
             i += 1
 
@@ -72,20 +82,55 @@ class Animation(Module):
         bmp = pygame.image.load(self.folder + '0.bmp')
         framecount = bmp.get_height() / 16
         arr = pygame.PixelArray(bmp)
+        self.imageWidth = bmp.get_width()
+        self.imageHeight = bmp.get_height()
 
         for index in range(framecount):
-            frame = [[int_to_color(arr[x, y + 16 * index]) for y in range(16)] for x in range(16)]
-            self.frames.append(frame)
+            self.build_frame(arr)
+
+    def build_frame(self, arr):
+
+        # setup image for x/y translation as needed
+        if self.offsetSpeedX > 0:
+            if bool(self.config['translate']['panoff']):
+                self.offsetX = self.imageWidth * -1
+            else:
+                self.offsetX = self.imageWidth * -1 + 16
+        elif self.offsetSpeedX < 0:
+            if bool(self.config['translate']['panoff']):
+                self.offsetX = 16
+            else:
+                self.offsetX = 0
+
+        if self.offsetSpeedY > 0:
+            if bool(self.config['translate']['panoff']):
+                self.offsetY = -16
+            else:
+                self.offsetY = 0
+        elif self.offsetSpeedY < 0:
+            if bool(self.config['translate']['panoff']):
+                self.offsetY = self.imageHeight
+            else:
+                self.offsetY = self.imageHeight - 16
+
+        frame = []
+        for x in range(self.imageWidth):
+            col = []
+            for y in range(self.imageHeight):
+                col.append(int_to_color(arr[x, y]))
+            frame.append(col)
+        self.frames.append(frame)
 
     def load_config(self):
-        cfg = ConfigParser.ConfigParser()
+        cp = ConfigParser
+        cfg = cp.ConfigParser()
         try:
             cfg.read(self.folder + 'config.ini')
             to_return = {
                 'animation': dict(cfg.items('animation')),
                 'translate': dict(cfg.items('translate'))
             }
-        except ConfigParser.NoSectionError:
+        except cp.NoSectionError:
             to_return = {}
 
         return to_return
@@ -94,6 +139,7 @@ class Animation(Module):
         self.pos += 1
         if self.pos >= len(self.frames):
             self.pos = 0
+
         self.screen.pixel = self.frames[self.pos]
         self.screen.update()
         time.sleep(self.interval / 1000.0)

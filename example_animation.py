@@ -18,7 +18,14 @@ else:
     to_load = u"animations/" + random.choice(animations)
 animation = Animation(screen, to_load)
 
+done = False
 while True:
     pygame.time.wait(10)
     for event in pygame.event.get():
-        pass
+        if event.type == pygame.KEYDOWN:
+            # quit on escape
+            if (event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
+                done = True
+                break  # break out from for loop
+    if done:
+        break  # break out from while loop
