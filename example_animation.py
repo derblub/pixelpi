@@ -2,6 +2,7 @@
 import os
 import sys
 import random
+import settings as s
 
 from screenfactory import create_screen
 from modules.animation import *
@@ -21,11 +22,12 @@ animation = Animation(screen, to_load)
 done = False
 while True:
     pygame.time.wait(10)
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            # quit on escape
-            if (event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
-                done = True
-                break  # break out from for loop
-    if done:
-        break  # break out from while loop
+    if s.SCREEN_TO_USE is 'virtual' or s.SCREEN_TO_USE is 'console':
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                # quit on escape
+                if (event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
+                    done = True
+                    break  # break out from for loop
+        if done:
+            break  # break out from while loop
