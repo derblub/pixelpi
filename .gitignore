@@ -3,3 +3,4 @@ other/
 *.pyc
 .idea
 neopixel.py
+local_settings.py
