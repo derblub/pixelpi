@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pygame
+import settings as s
 
 from modules.cycle import Cycle
 from screenfactory import create_screen
@@ -11,5 +12,6 @@ cycle.start()
 
 while True:
     pygame.time.wait(10)
-    for event in pygame.event.get():
-        pass
+    if s.SCREEN_TO_USE is 'virtual' or s.SCREEN_TO_USE is 'console':
+        for event in pygame.event.get():
+            pass
