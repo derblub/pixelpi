@@ -1,9 +1,8 @@
-import os.path
 import time
-import ConfigParser
 import pygame.image
 import settings as s
 
+from ast import literal_eval
 from helpers import *
 from module import Module
 
@@ -15,33 +14,18 @@ class Animation(Module):
         self.frames = []
         if not folder.endswith('/'):
             folder += '/'
-
         self.folder = folder
+        self.config = read_config(self.folder + 'config.ini')
+
         self.screen = screen
 
         self.imageWidth = 0
         self.imageHeight = 0
-        self.offsetSpeedX = 0  # number of pixels to  x-translate each frame
-        self.offsetSpeedY = 0  # number of pixels to y-translate each frame
+        # self.offsetSpeedX = self.config['translate']['movex']
+        self.offsetSpeedX = 1
+        self.offsetSpeedY = self.config['translate']['movey']
         self.offsetX = 0  # for translating images x pixels
         self.offsetY = 0  # for translating images y pixels
-
-        self.holdTime = s.HOLD  # millisecods to hold each .bmp frame
-
-        self.config = self.load_config()
-
-        if interval is None:
-            try:
-                self.interval = int(self.config['animation']['hold'])
-            except KeyError:
-                self.interval = self.holdTime
-        else:
-            self.interval = interval
-
-        try:
-            self.offsetSpeedX = int(self.config['translate']['movex'])
-        except KeyError:
-            pass
 
         try:
             if self.is_single_file():
@@ -56,6 +40,34 @@ class Animation(Module):
         except Exception:
             print('Failed to load ' + folder)
             raise
+
+        if interval is None:
+            self.interval = self.config['animation']['hold']
+        else:
+            self.interval = interval
+
+        # setup image for x/y translation as needed
+        if self.offsetSpeedX > 0:
+            if self.config['translate']['panoff']:
+                self.offsetX = self.imageWidth * -1
+            else:
+                self.offsetX = self.imageWidth * -1 + 16
+        elif self.offsetSpeedX < 0:
+            if self.config['translate']['panoff']:
+                self.offsetX = 16
+            else:
+                self.offsetX = 0
+
+        if self.offsetSpeedY > 0:
+            if self.config['translate']['panoff']:
+                self.offsetY = -16
+            else:
+                self.offsetY = 0
+        elif self.offsetSpeedY < 0:
+            if self.config['translate']['panoff']:
+                self.offsetY = self.imageHeight
+            else:
+                self.offsetY = self.imageHeight - 16
 
         self.screen.update()
 
@@ -96,31 +108,9 @@ class Animation(Module):
 
     def build_frame(self, arr):
 
-        # setup image for x/y translation as needed
-        if self.offsetSpeedX > 0:
-            if bool(self.config['translate']['panoff']):
-                self.offsetX = self.imageWidth * -1
-            else:
-                self.offsetX = self.imageWidth * -1 + 16
-        elif self.offsetSpeedX < 0:
-            if bool(self.config['translate']['panoff']):
-                self.offsetX = 16
-            else:
-                self.offsetX = 0
-
-        if self.offsetSpeedY > 0:
-            if bool(self.config['translate']['panoff']):
-                self.offsetY = -16
-            else:
-                self.offsetY = 0
-        elif self.offsetSpeedY < 0:
-            if bool(self.config['translate']['panoff']):
-                self.offsetY = self.imageHeight
-            else:
-                self.offsetY = self.imageHeight - 16
-
-        if bool(self.config['translate']['panoff']):
-            if self.offsetX > 16 or self.offsetX < (self.imageWidth * -1) or  self.offsetY > self.imageHeight or self.offsetY < -16:
+        # begin/end movement off screen?
+        if self.config['translate']['panoff']:
+            if self.offsetX > 16 or self.offsetX < (self.imageWidth * -1) or self.offsetY > self.imageHeight or self.offsetY < -16:
                 if self.offsetSpeedX > 0 and self.offsetX >= 16:
                     self.offsetX = (self.imageWidth * -1)
                 elif self.offsetSpeedX < 0 and self.offsetX <= self.imageWidth * -1:
@@ -156,7 +146,7 @@ class Animation(Module):
                 # offsetY is negative
                 elif x < self.offsetY * -1:
                     col.append(int_to_color(0))  # black pixel
-                # offsetX is bexond bmp width
+                # offsetX is beyond bmp width
                 elif y >= self.imageWidth + self.offsetX:
                     col.append(int_to_color(0))  # black pixel
                 # offsetX is positive
@@ -168,22 +158,6 @@ class Animation(Module):
 
             frame.append(col)
         self.frames.append(frame)
-
-    def load_config(self):
-        cp = ConfigParser
-        cfg = cp.ConfigParser()
-        try:
-            print "loading " + self.folder + "config.ini"
-            cfg.read(self.folder + 'config.ini')
-            to_return = {
-                'animation': dict(cfg.items('animation')),
-                'translate': dict(cfg.items('translate'))
-            }
-        except cp.NoSectionError:
-            print "coul'd not load config.ini"
-            to_return = {}
-
-        return to_return
 
     def tick(self):
         self.pos += 1

@@ -20,6 +20,9 @@ HOLD = 200
 SCREEN_TO_USE = 'matrix'
 PIXEL_SIZE = 15  # for virtual-screen
 
+
+DEBUG = False
+
 try:
     from local_settings import *
 except ImportError, e:
