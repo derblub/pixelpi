@@ -47,8 +47,8 @@ class Clock(Module):
         self.draw_digit(math.floor(now.minute / 10), Point(9, 5), color)
 
         if colon:
-            self.screen.pixel[7][7] = color
-            self.screen.pixel[7][9] = color
+            self.screen.pixel[7][6] = color
+            self.screen.pixel[7][8] = color
 
         self.draw_digit(now.hour % 10, Point(3, 5), color)
         if math.floor(now.hour / 10) == 1:
