@@ -1,8 +1,8 @@
 import os.path
 import time
 import ConfigParser
-
 import pygame.image
+import settings as s
 
 from helpers import *
 from module import Module
@@ -26,7 +26,22 @@ class Animation(Module):
         self.offsetX = 0  # for translating images x pixels
         self.offsetY = 0  # for translating images y pixels
 
-        self.holdTime = 200  # millisecods to hold each .bmp frame
+        self.holdTime = s.HOLD  # millisecods to hold each .bmp frame
+
+        self.config = self.load_config()
+
+        if interval is None:
+            try:
+                self.interval = int(self.config['animation']['hold'])
+            except KeyError:
+                self.interval = self.holdTime
+        else:
+            self.interval = interval
+
+        try:
+            self.offsetSpeedX = int(self.config['translate']['movex'])
+        except KeyError:
+            pass
 
         try:
             if self.is_single_file():
@@ -43,15 +58,6 @@ class Animation(Module):
             raise
 
         self.screen.update()
-        self.config = self.load_config()
-
-        if interval is None:
-            try:
-                self.interval = int(self.config['animation']['hold'])
-            except KeyError:
-                self.interval = self.holdTime
-        else:
-            self.interval = interval
 
         self.pos = 0
         if autoplay:
@@ -113,11 +119,53 @@ class Animation(Module):
             else:
                 self.offsetY = self.imageHeight - 16
 
+        if bool(self.config['translate']['panoff']):
+            if self.offsetX > 16 or self.offsetX < (self.imageWidth * -1) or  self.offsetY > self.imageHeight or self.offsetY < -16:
+                if self.offsetSpeedX > 0 and self.offsetX >= 16:
+                    self.offsetX = (self.imageWidth * -1)
+                elif self.offsetSpeedX < 0 and self.offsetX <= self.imageWidth * -1:
+                    self.offsetX = 16
+                if self.offsetSpeedY > 0 and self.offsetY >= self.imageHeight:
+                    self.offsetY = -16
+                elif self.offsetSpeedY < 0 and self.offsetY <= -16:
+                    self.offsetY = self.imageHeight
+        else:
+            if self.offsetX > 0 or self.offsetX < (self.imageWidth * -1 + 16) or self.offsetY > self.imageHeight - 16 or self.offsetY < 0:
+                if self.offsetSpeedX > 0 and self.offsetX >= 0:
+                    self.offsetX = (self.imageWidth * -1 + 16)
+                elif self.offsetSpeedX < 0 and self.offsetX <= self.imageWidth - 16:
+                    self.offsetX = 0
+                if self.offsetSpeedY > 0 and self.offsetY >= self.imageHeight - 16:
+                    self.offsetY = 0
+                elif self.offsetSpeedY < 0 and self.offsetY <= 0:
+                    self.offsetY = self.imageHeight - 16
+
+        if self.offsetSpeedX != 0:
+            self.offsetX += self.offsetSpeedX
+        if self.offsetSpeedY != 0:
+            self.offsetY += self.offsetSpeedY
+
         frame = []
         for x in range(self.imageWidth):
             col = []
             for y in range(self.imageHeight):
-                col.append(int_to_color(arr[x, y]))
+
+                # offsetY is beyond bmp height
+                if x >= self.imageHeight - self.offsetY:
+                    col.append(int_to_color(0))  # black pixel
+                # offsetY is negative
+                elif x < self.offsetY * -1:
+                    col.append(int_to_color(0))  # black pixel
+                # offsetX is bexond bmp width
+                elif y >= self.imageWidth + self.offsetX:
+                    col.append(int_to_color(0))  # black pixel
+                # offsetX is positive
+                elif y < self.offsetX:
+                    col.append(int_to_color(0))  # black pixel
+                # all good
+                else:
+                    col.append(int_to_color(arr[x, y]))
+
             frame.append(col)
         self.frames.append(frame)
 
@@ -125,12 +173,14 @@ class Animation(Module):
         cp = ConfigParser
         cfg = cp.ConfigParser()
         try:
+            print "loading " + self.folder + "config.ini"
             cfg.read(self.folder + 'config.ini')
             to_return = {
                 'animation': dict(cfg.items('animation')),
                 'translate': dict(cfg.items('translate'))
             }
         except cp.NoSectionError:
+            print "coul'd not load config.ini"
             to_return = {}
 
         return to_return

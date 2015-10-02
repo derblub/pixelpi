@@ -14,6 +14,7 @@ LED_INVERT = False
 """ config options
 """
 BRIGHTNESS = 200
+HOLD = 200
 
 
 SCREEN_TO_USE = 'matrix'
