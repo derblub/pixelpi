@@ -5,7 +5,10 @@ import settings as s
 
 from jinja2 import Environment, FileSystemLoader
 
-urls = ('/', 'index')
+urls = (
+    '/', 'index',
+    '/settings', 'settings',
+)
 
 
 class WebInterface(web.application):
@@ -18,18 +21,31 @@ class WebInterface(web.application):
         return server
 
 
+# VIEWS ___________________
 class index:
     def GET(self):
-        return render_template('index.html')
+        c = {
+            'page': 'index',
+        }
+        return render_template('index.html', c)
 
 
+class settings:
+    def GET(self):
+        c = {
+            'page': 'settings',
+        }
+        return render_template('settings.html', c)
+
+
+# _______________________
 def start_server():
     print('\033[38;5;85mstarting web-interface, listening on \033[38;5;196mhttp://%s:%d/\033[0m' % (s.WEBINTERFACE_IP, s.WEBINTERFACE_PORT))
     app = WebInterface(urls, globals())
     app.run()
 
 
-def render_template(template_name, **context):
+def render_template(template_name, context):
     extensions = context.pop('extensions', [])
     globals = context.pop('globals', {})
 
