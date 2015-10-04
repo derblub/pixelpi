@@ -21,6 +21,13 @@ SCREEN_TO_USE = 'matrix'
 PIXEL_SIZE = 15  # for virtual-screen
 
 
+""" web-interface
+"""
+WEBINTERFACE_ENABLED = True
+WEBINTERFACE_IP = '0.0.0.0'
+WEBINTERFACE_PORT = 8888
+
+
 DEBUG = False
 
 try:

@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-import os
 import sys
 import random
-import settings as s
 
 from screenfactory import create_screen
 from modules.animation import *
+
+
+if s.WEBINTERFACE_ENABLED:
+    import thread
+    from server.interface import *
+    thread.start_new_thread(start_server, ())
+
 
 animations = []
 for root, dirs, files in os.walk(u"animations/"):

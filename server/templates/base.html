@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="static/css/style.css">
+  <title>
+    {% block title %}{% endblock %}
+    {% if self.title() %} - {% endif %}
+    pixelpi
+  </title>
+</head>
+<body>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>
