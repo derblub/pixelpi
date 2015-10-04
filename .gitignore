@@ -4,3 +4,4 @@ other/
 .idea
 neopixel.py
 local_settings.py
+node_modules

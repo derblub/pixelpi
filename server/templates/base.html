@@ -1,17 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <link rel="stylesheet" href="static/css/style.css">
   <title>
     {% block title %}{% endblock %}
     {% if self.title() %} - {% endif %}
     pixelpi
   </title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
 
     {% block content %}
     {% endblock %}
 
+  <script src="static/js/vendor/jquery.min.js"></script>
+  <script src="static/js/vendor/bootstrap.min.js"></script>
+  <script src="static/js/main.min.js"></script>
 </body>
 </html>
