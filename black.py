@@ -1,4 +1,4 @@
-from Screen import *
+from screenfactory import *
 
-screen = Screen()
+screen = create_screen()
 screen.update()
