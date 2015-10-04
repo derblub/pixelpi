@@ -5,6 +5,13 @@ import settings as s
 from modules.cycle import Cycle
 from screenfactory import create_screen
 
+
+if s.WEBINTERFACE_ENABLED:
+    import thread
+    from server.interface import *
+    thread.start_new_thread(start_server, ())
+
+
 screen = create_screen()
 
 cycle = Cycle(screen, "animations/")
