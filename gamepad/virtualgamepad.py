@@ -1,4 +1,5 @@
 import pygame
+
 from abstractgamepad import AbstractGamepad
 
 instance = None
@@ -25,19 +26,20 @@ class VirtualGamepad(AbstractGamepad):
             (pygame.K_9, 9)
         ]
 
-        if instance != None:
+        if instance is not None:
             raise Exception("Don't create multiple virtual gamepads!")
 
     def keycode_to_int(self, keycode):
         for relation in self.keycode_list:
-            if (relation[0] == keycode):
+            if relation[0] == keycode:
                 return relation[1]
 
-    def consume_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            self.press(self.keycode_to_int(event.key))
-        if event.type == pygame.KEYUP:
-            self.release(self.keycode_to_int(event.key))
+    def tick(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                self.press(self.keycode_to_int(event.key))
+            if event.type == pygame.KEYUP:
+                self.release(self.keycode_to_int(event.key))
 
 
 instance = VirtualGamepad()

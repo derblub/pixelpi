@@ -1,8 +1,8 @@
 # From http://nessy.info/?p=62
 
 import time
-
 from thread import start_new_thread
+
 from abstractgamepad import AbstractGamepad
 
 
@@ -10,12 +10,12 @@ class Gamepad(AbstractGamepad):
     def __init__(self, verbose=False):
         super(Gamepad, self).__init__(verbose)
 
-        self.running = True
         self.pipe = open('/dev/input/by-id/usb-Logitech_Logitech_Dual_Action-event-joystick', 'r')
 
         self.start()
 
     def start(self):
+        self.running = True
         start_new_thread(self.run, ())
 
     def stop(self):

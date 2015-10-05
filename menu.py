@@ -1,10 +1,12 @@
+import os
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+import pygame
 import time
 import math
 
 from menu.menuitems import menu_items
 from screenfactory import create_screen
 from gamepadfactory import create_gamepad
-from gamepad.virtualgamepad import *
 from helpers import *
 
 
@@ -30,24 +32,33 @@ class Menu(object):
             self.draw()
 
     def draw_on_screen(self, x, y, zoom, graphic):
-        size = int(8 * zoom)
-        for line in range(size):
-            for pixel in range(size):
-                source = Point(int(pixel / zoom), int(line / zoom))
-                target = Point(int(x - size * 0.5 + pixel), int(y - size * 0.5 + line))
-                if 0 <= target.x < 16 and 0 <= target.y < 16:
+        if zoom == 0:
+            return
+        if self.brightness == 1 and zoom == 1:
+            for source_x in range(8):
+                for source_y in range(8):
+                    target = Point(source_x + x - 4, source_y + y - 4)
+                    if 0 <= target.x < 16 and 0 <= target.y < 16:
+                        self.screen.pixel[target.x][target.y] = graphic[source_x][source_y]
+            return
+
+        for target_x in range(16):
+            for target_y in range(16):
+                source = Point(int((target_x - x) / zoom + 4), int((target_y - y) / zoom + 4))
+                if source.y >= 0 and 0 <= source.x < 8 and source.y < 8:
                     c = graphic[source.x][source.y]
-                    self.screen.pixel[target.x][target.y] = Color(c.r * self.brightness, c.g * self.brightness,
-                                                                  c.b * self.brightness)
+                    self.screen.pixel[target_x][target_y] = Color(int(c.r * self.brightness),
+                                                                  int(c.g * self.brightness),
+                                                                  int(c.b * self.brightness))
 
     def draw_scrollbar(self):
         size = int(math.floor(16 / len(self.items)))
         start = int(math.floor((16 - size) * self.index / (len(self.items) - 1)))
 
         for x in range(size):
-            self.screen.pixel[(start + x - int(size * self.offset) + 16) % 16][15] = Color(80 * self.brightness,
-                                                                                           80 * self.brightness,
-                                                                                           80 * self.brightness)
+            self.screen.pixel[(start + x - int(size * self.offset) + 16) % 16][15] = Color(int(80 * self.brightness),
+                                                                                           int(80 * self.brightness),
+                                                                                           int(80 * self.brightness))
 
     def draw(self):
         if self.module is not None:
@@ -68,6 +79,7 @@ class Menu(object):
         return x
 
     def tick(self):
+        self.gamepad.tick()
         if self.dir != 0:
             self.offset = self.dir * self.ease((1 - (time.clock() - self.start) / (self.end - self.start)))
 
@@ -96,8 +108,10 @@ class Menu(object):
             self.move(1)
         if key == self.gamepad.LEFT:
             self.move(-1)
-        if key == 1:
+        if key == 2:
             self.launch()
+
+        self.items[self.index].on_key_press(key, self)
 
     def stop(self):
         self.module.stop()
@@ -108,6 +122,8 @@ class Menu(object):
         self.gamepad.on_release = []
 
     def launch(self):
+        if not self.items[self.index].is_launchable():
+            return
         self.start_animation()
         self.module = self.items[self.index].get_module(self.screen, self.gamepad)
         self.module.start()
@@ -120,7 +136,6 @@ class Menu(object):
             self.zoom = 1 + 16 * ((time.clock() - start) / (end - start)) ** 2
             self.brightness = min(1, 1 - ((time.clock() - start) / (end - start)))
             self.draw()
-            pygame.time.wait(20)
 
         pygame.time.wait(100)
         self.reset(redraw=False)
@@ -134,7 +149,6 @@ class Menu(object):
             self.brightness = min(1, 1 * ((time.clock() - start) / (end - start)))
 
             self.draw()
-            pygame.time.wait(20)
 
         self.reset()
 
@@ -144,5 +158,3 @@ if __name__ == '__main__':
     while True:
         menu.tick()
         pygame.time.wait(10)
-        for event in pygame.event.get():
-            instance.consume_event(event)
