@@ -14,18 +14,26 @@ class AbstractGamepad(object):
         self.on_release = []
 
     def press(self, btn):
-        self.button[btn] = True
-        if self.verbose:
-            print('Pressed ' + str(btn))
-        for callback in self.on_press:
-            callback(btn)
+        try:
+            self.button[btn] = True
+            if self.verbose:
+                print('Pressed ' + str(btn))
+            for callback in self.on_press:
+                callback(btn)
+        except TypeError:
+            # don't crash on unexpected key-codes
+            pass
 
     def release(self, btn):
-        self.button[btn] = False
-        if self.verbose:
-            print('Released ' + str(btn))
-        for callback in self.on_release:
-            callback(btn)
+        try:
+            self.button[btn] = False
+            if self.verbose:
+                print('Released ' + str(btn))
+            for callback in self.on_release:
+                callback(btn)
+        except TypeError:
+            # don't crash on unexpected key-codes
+            pass
 
     def tick(self):
         pass
