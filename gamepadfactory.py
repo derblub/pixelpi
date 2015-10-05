@@ -1,9 +1,8 @@
-# Use this to switch between virtual and LED screen for examples
-use_virtual_gamepad = False
+import settings as s
 
 
 def create_gamepad():
-    if use_virtual_gamepad:
+    if s.INPUT_TYPE == 'virtual':
         from gamepad.virtualgamepad import instance
         return instance
     else:

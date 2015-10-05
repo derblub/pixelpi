@@ -5,7 +5,7 @@ import colorsys
 
 import settings as s
 
-if s.SCREEN_TO_USE is 'virtual' or s.SCREEN_TO_USE is 'console':
+if s.SCREEN_TO_USE in ['virtual', 'console']:
     Color = collections.namedtuple('Color', 'r g b')
 else:
     from neopixel import *
@@ -26,6 +26,7 @@ def hsv_to_color(hue, saturation, value):
 
 
 def read_config(config_file):
+    settings = {}
     defaults = {
         'animation': {
             'hold': str(s.HOLD),

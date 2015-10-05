@@ -3,13 +3,13 @@
 
 """ screen setup
 """
-
 MATRIX_WIDTH = 16
 MATRIX_HEIGHT = 16
 LED_PIN = 18
 LED_FREQ = 800000
 LED_DMA = 5
 LED_INVERT = False
+
 
 """ config options
 """
@@ -20,6 +20,8 @@ HOLD = 200
 SCREEN_TO_USE = 'matrix'
 PIXEL_SIZE = 15  # for virtual-screen
 
+INPUT_TYPE = 'gamepad'
+
 
 """ web-interface
 """
@@ -29,6 +31,7 @@ WEBINTERFACE_PORT = 8888
 
 
 DEBUG = False
+
 
 try:
     from local_settings import *
