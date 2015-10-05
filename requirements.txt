@@ -1,0 +1,5 @@
+Jinja2==2.8
+MarkupSafe==0.23
+pygame==1.9.2a0
+web.py==0.37
+wheel==0.24.0

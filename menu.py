@@ -15,7 +15,7 @@ if s.WEBINTERFACE_ENABLED:
     import thread
     from server.interface import *
     thread.start_new_thread(start_server, ())
-    
+
 
 class Menu(object):
     def __init__(self, items):
