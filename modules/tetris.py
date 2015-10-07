@@ -101,7 +101,7 @@ class Tetris(Module):
                 if self.current_tetromino.map[x][y]:
                     a = x + (self.screen.width - self.level_width) / 2 + self.tetromino_pos.x
                     b = y + (self.screen.height - self.level_height) / 2 + self.tetromino_pos.y
-                    if b >= 0 and 0 <= a < self.screen.width and b < self.screen.height:
+                    if 0 <= a < self.screen.width and 0 <= b < self.screen.height:
                         self.screen.pixel[a][b] = self.current_tetromino.color
 
     def draw_ghost(self):

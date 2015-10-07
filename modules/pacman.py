@@ -93,7 +93,7 @@ class Ghost(object):
         direction_map = self.game.get_direction_map(self.get_destination(), self.mode == self.FLEE)
         direction = direction_map[self.pos.x][self.pos.y]
         old = self.pos
-        if direction != None:
+        if direction is not None:
             self.pos = Point((self.pos.x + direction.x + 16) % 16, (self.pos.y + direction.y + 16) % 16)
 
     def next_mode_is_due(self):
