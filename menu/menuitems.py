@@ -32,6 +32,7 @@ class MenuItem(object):
 
 class CycleItem(MenuItem):
     def __init__(self):
+        super(CycleItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/cycle.bmp')
 
     def get_module(self, screen, gamepad):
@@ -41,6 +42,7 @@ class CycleItem(MenuItem):
 
 class TetrisItem(MenuItem):
     def __init__(self):
+        super(TetrisItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/tetris.bmp')
 
     def get_module(self, screen, gamepad):
@@ -50,6 +52,7 @@ class TetrisItem(MenuItem):
 
 class SnakeItem(MenuItem):
     def __init__(self):
+        super(SnakeItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/snake.bmp')
 
     def get_module(self, screen, gamepad):
@@ -59,6 +62,7 @@ class SnakeItem(MenuItem):
 
 class PacmanItem(MenuItem):
     def __init__(self):
+        super(PacmanItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/pacman.bmp')
 
     def get_module(self, screen, gamepad):
@@ -68,6 +72,7 @@ class PacmanItem(MenuItem):
 
 class ClockItem(MenuItem):
     def __init__(self):
+        super(ClockItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/clock.bmp')
 
     def get_module(self, screen, gamepad):
@@ -77,6 +82,7 @@ class ClockItem(MenuItem):
 
 class PieItem(MenuItem):
     def __init__(self):
+        super(PieItem, self).__init__()
         self.preview = MenuItem.load_preview('menu/preview/pie.bmp')
 
     def get_module(self, screen, gamepad):
@@ -86,6 +92,7 @@ class PieItem(MenuItem):
 
 class BrightnessItem(MenuItem):
     def __init__(self):
+        super(BrightnessItem, self).__init__()
         self.preview_template = MenuItem.load_preview('menu/preview/brightness.bmp')
         self.value = 5
         self.draw()
@@ -94,7 +101,7 @@ class BrightnessItem(MenuItem):
         self.preview = [self.preview_template[x][:] for x in range(8)]
         for x in range(8):
             if self.value > x:
-                self.preview[x][7] = Color(255, 255, 255)
+                self.preview[x][7] = RGBColor(255, 255, 255)
 
     def is_launchable(self):
         return False
@@ -113,6 +120,16 @@ class BrightnessItem(MenuItem):
             self.update(menu)
 
 
+class MusicItem(MenuItem):
+    def __init__(self):
+        super(MusicItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/music.bmp')
+
+    def get_module(self, screen, gamepad):
+        from modules.music import Music
+        return Music(screen)
+
+
 menu_items = [
     CycleItem(),
     TetrisItem(),
@@ -120,5 +137,6 @@ menu_items = [
     PacmanItem(),
     ClockItem(),
     PieItem(),
-    BrightnessItem()
+    BrightnessItem(),
+    MusicItem()
 ]

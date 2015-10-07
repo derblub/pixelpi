@@ -1,20 +1,13 @@
 import os
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-import pygame
-import time
-import math
-import settings as s
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 from menu.menuitems import menu_items
 from screenfactory import create_screen
 from gamepadfactory import create_gamepad
+import pygame
+import time
+import math
 from helpers import *
-
-
-if s.WEBINTERFACE_ENABLED:
-    import thread
-    from server.interface import *
-    thread.start_new_thread(start_server, ())
 
 
 class Menu(object):
@@ -46,7 +39,7 @@ class Menu(object):
                 for source_y in range(8):
                     target = Point(source_x + x - 4, source_y + y - 4)
                     if 0 <= target.x < 16 and 0 <= target.y < 16:
-                        self.screen.pixel[target.x][target.y] = graphic[source_x][source_y]
+                        self.screen.pixel[target.x][target.y] = rgb_to_int(graphic[source_x][source_y])
             return
 
         for target_x in range(16):
