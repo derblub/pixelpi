@@ -1,17 +1,19 @@
-from neopixel import *
 import helpers
-import settings as s
+
+from settings import *
+from neopixel import *
+S = Settings()
 
 
 class Screen:
     def __init__(self,
-                 width=s.MATRIX_WIDTH,
-                 height=s.MATRIX_HEIGHT,
-                 led_pin=s.LED_PIN,
-                 led_freq_hz=s.LED_FREQ,
-                 led_dma=s.LED_DMA,
-                 led_invert=s.LED_INVERT,
-                 led_brightness=s.BRIGHTNESS):
+                 width=int(S.get('screen', 'matrix_width')),
+                 height=int(S.get('screen', 'matrix_height')),
+                 led_pin=int(S.get('screen', 'led_pin')),
+                 led_freq_hz=int(S.get('screen', 'led_freq')),
+                 led_dma=int(S.get('screen', 'led_dma')),
+                 led_invert=(True if S.get('screen', 'led_invert').lower() == 'true' else False),
+                 led_brightness=int(S.get('screen', 'brightness'))):
         self.width = width
         self.height = height
 

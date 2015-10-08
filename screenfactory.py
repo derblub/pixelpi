@@ -1,13 +1,12 @@
-import settings as s
+import os
 
 
 def create_screen():
-    if s.SCREEN_TO_USE == 'virtual':
-        from screen.virtualscreen import VirtualScreen
-        return VirtualScreen()
-    elif s.SCREEN_TO_USE == 'console':
-        from screen.consolescreen import ConsoleScreen
-        return ConsoleScreen()
-    else:
+    if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         from screen.screen import Screen
         return Screen()
+    else:
+        # from screen.consolescreen import ConsoleScreen
+        # return ConsoleScreen()
+        from screen.virtualscreen import VirtualScreen
+        return VirtualScreen()

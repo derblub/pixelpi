@@ -1,10 +1,7 @@
-import settings as s
-
-
 def create_gamepad():
-    if s.INPUT_TYPE == 'virtual':
+    try:
         from gamepad.virtualgamepad import instance
         return instance
-    else:
+    except:
         from gamepad.gamepad import Gamepad
         return Gamepad()

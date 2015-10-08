@@ -154,7 +154,16 @@ class Menu(object):
 
 
 if __name__ == '__main__':
+    done = False
     menu = Menu(menu_items)
     while True:
         menu.tick()
         pygame.time.wait(10)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                # quit on escape
+                if (event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
+                    done = True
+                    break  # break for
+        if done:
+            break  # break while

@@ -3,7 +3,8 @@ import ConfigParser
 import collections
 import colorsys
 
-import settings as s
+from settings import *
+S = Settings()
 
 
 def Color(r, g, b):
@@ -43,7 +44,7 @@ def read_config(config_file):
     settings = {}
     defaults = {
         'animation': {
-            'hold': str(s.HOLD),
+            'hold': str(S.get('animations', 'hold')),
             'loop': 'true'
         },
         'translate': {
