@@ -101,7 +101,7 @@ class Tetris(Module):
                 if self.current_tetromino.map[x][y]:
                     a = x + (self.screen.width - self.level_width) / 2 + self.tetromino_pos.x
                     b = y + (self.screen.height - self.level_height) / 2 + self.tetromino_pos.y
-                    if 0 <= a < self.screen.width and 0 <= b < self.screen.height:
+                    if b >= 0 and 0 <= a < self.screen.width and b < self.screen.height:
                         self.screen.pixel[a][b] = self.current_tetromino.color
 
     def draw_ghost(self):
@@ -109,14 +109,12 @@ class Tetris(Module):
         while self.fits(self.current_tetromino, Point(pos.x, pos.y + 1)):
             pos = Point(pos.x, pos.y + 1)
 
-        f = 0.03
-        color = Color(int(self.current_tetromino.color.r * f), int(self.current_tetromino.color.g * f),
-                      int(self.current_tetromino.color.b * f))
+        dark_color = darken_color(self.current_tetromino.color, 0.03)
         for x in range(self.current_tetromino.width):
             for y in range(self.current_tetromino.height):
                 if self.current_tetromino.map[x][y]:
                     self.screen.pixel[x + (self.screen.width - self.level_width) / 2 + pos.x][
-                        y + (self.screen.height - self.level_height) / 2 + pos.y] = color
+                        y + (self.screen.height - self.level_height) / 2 + pos.y] = dark_color
 
     def draw(self):
         self.screen.clear()
@@ -147,10 +145,10 @@ class Tetris(Module):
         for x in range(tetromino.width):
             for y in range(tetromino.height):
                 if tetromino.map[x][y] and (
-                                            x + position.x < 0 or
-                                            x + position.x >= self.level_width or
-                                            y + position.y >= self.level_height or
-                                            (y >= 0 and self.level[x + position.x][y + position.y] is not None)):
+                                            x + position.x < 0
+                                or x + position.x >= self.level_width
+                            or y + position.y >= self.level_height
+                        or (y >= 0 and self.level[x + position.x][y + position.y] is not None)):
                     return False
         return True
 
@@ -192,13 +190,8 @@ class Tetris(Module):
 
             particles = [p for p in particles if p.y < self.level_height]
 
-            for p in particles:
-                if p.y >= self.level_height:
-                    print('wtf')
-
             self.draw()
             for p in particles:
-                # print(p.y)
                 self.screen.pixel[p.x + (self.screen.width - self.level_width) / 2][
                     int(math.floor(p.y)) + (self.screen.height - self.level_height) / 2] = p.color
 

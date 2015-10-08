@@ -1,8 +1,8 @@
 import time
-import pygame.image
-import settings as s
 
-from ast import literal_eval
+import pygame.image
+import pygame.image
+
 from helpers import *
 from module import Module
 
@@ -18,6 +18,40 @@ class Animation(Module):
         self.config = read_config(self.folder + 'config.ini')
 
         self.screen = screen
+
+        def load_frames(self):
+            self.frames = []
+            i = 0
+            while os.path.isfile(self.folder + str(i) + '.bmp'):
+                try:
+                    bmp = pygame.image.load(self.folder + str(i) + '.bmp')
+                except Exception:
+                    print('Error loading ' + str(i) + '.bmp from ' + self.folder)
+                    raise
+                pixel_array = pygame.PixelArray(bmp)
+
+                frame = [[pixel_array[x, y] for y in range(16)] for x in range(16)]
+                self.frames.append(frame)
+
+                i += 1
+
+        def is_single_file(self):
+            return os.path.isfile(self.folder + '0.bmp') and not os.path.isfile(self.folder + '1.bmp')
+
+        def load_single(self):
+            self.frames = []
+            bmp = pygame.image.load(self.folder + '0.bmp')
+            framecount = bmp.get_height() / 16
+            pixel_array = pygame.PixelArray(bmp)
+
+            for index in range(framecount):
+                frame = [[pixel_array[x, y + 16 * index] for y in range(16)] for x in range(16)]
+                self.frames.append(frame)
+
+        def load_interval(self):
+            cfg = ConfigParser.ConfigParser()
+            cfg.read(self.folder + 'config.ini')
+            return cfg.getint('animation', 'hold')
 
         self.imageWidth = 0
         self.imageHeight = 0

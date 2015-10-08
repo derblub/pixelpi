@@ -32,6 +32,13 @@ def rgb_to_int(c):
     return Color(c.r, c.g, c.b)
 
 
+def darken_color(color, factor):
+    b = color & 255
+    g = (color >> 8) & 255
+    r = (color >> 16) & 255
+    return Color(int(r * factor), int(g * factor), int(b * factor))
+
+
 def read_config(config_file):
     settings = {}
     defaults = {
