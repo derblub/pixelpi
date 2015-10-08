@@ -10,27 +10,26 @@ class VirtualGamepad(AbstractGamepad):
         super(VirtualGamepad, self).__init__(verbose)
 
         self.keycode_list = [
-            (276, self.LEFT),
-            (275, self.RIGHT),
-            (273, self.UP),
-            (274, self.DOWN),
-            (0, 10),
-            (1, 1),
-            (2, 2),
-            (3, 3),
-            (4, 4),
-            (5, 5),
-            (6, 6),
-            (7, 7),
-            (8, 8),
-            (9, 9)
+            (pygame.K_LEFT, self.LEFT),
+            (pygame.K_RIGHT, self.RIGHT),
+            (pygame.K_UP, self.UP),
+            (pygame.K_DOWN, self.DOWN),
+            (pygame.K_0, 10),
+            (pygame.K_1, 1),
+            (pygame.K_2, 2),
+            (pygame.K_3, 3),
+            (pygame.K_4, 4),
+            (pygame.K_5, 5),
+            (pygame.K_6, 6),
+            (pygame.K_7, 7),
+            (pygame.K_8, 8),
+            (pygame.K_9, 9)
         ]
 
         if instance is not None:
             raise Exception("Don't create multiple virtual gamepads!")
 
     def keycode_to_int(self, keycode):
-        print keycode
         for relation in self.keycode_list:
             if relation[0] == keycode:
                 return relation[1]

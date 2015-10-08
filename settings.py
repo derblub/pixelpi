@@ -23,7 +23,7 @@ class Settings:
                 'brightness': '200',
             },
             'animations': {
-                'hold': '200',
+                'hold': '100',
             },
             'webinterface': {
                 'enabled': 'True',
