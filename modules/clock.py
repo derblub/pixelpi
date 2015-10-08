@@ -11,6 +11,7 @@ class Clock(Module):
         super(Clock, self).__init__(screen)
 
     def draw_digit(self, digit, pos, color):
+        
         if digit in [0, 2, 3, 4, 5, 6, 7, 8, 9]:
             self.screen.pixel[pos.x + 0][pos.y + 0] = color
         if digit in [0, 2, 3, 5, 6, 7, 8, 9, 22]:
@@ -40,29 +41,35 @@ class Clock(Module):
         if digit in [22]:
             self.screen.pixel[pos.x + 1][pos.y + 3] = color
 
-    def draw_time(self, color, colon=True):
+    def draw_time(self, hue, colon=True):
         now = datetime.datetime.now()
 
-        self.draw_digit(now.minute % 10, Point(13, 5), color)
-        self.draw_digit(math.floor(now.minute / 10), Point(9, 5), color)
+        digit_color = hsv_to_color(hue, 1, 1)
+        colon_color = hsv_to_color(hue, 0.8, 1)
+
+        self.draw_digit(now.minute % 10, Point(13, 5), digit_color)
+        self.draw_digit(math.floor(now.minute / 10), Point(9, 5), digit_color)
 
         if colon:
-            self.screen.pixel[7][6] = color
-            self.screen.pixel[7][8] = color
+            self.screen.pixel[7][6] = colon_color
+            self.screen.pixel[7][8] = colon_color
+        else:
+            self.screen.pixel[7][6] = digit_color
+            self.screen.pixel[7][8] = digit_color
 
-        self.draw_digit(now.hour % 10, Point(3, 5), color)
+        self.draw_digit(now.hour % 10, Point(3, 5), digit_color)
         if math.floor(now.hour / 10) == 1:
-            self.draw_digit(1, Point(-1, 5), color)
+            self.draw_digit(1, Point(-1, 5), digit_color)
         if math.floor(now.hour / 10) == 2:
-            self.draw_digit(22, Point(-1, 5), color)
+            self.draw_digit(22, Point(-1, 5), digit_color)
 
     def draw(self, colon=True):
         self.screen.clear()
-        self.draw_time(Color(255, 255, 255), colon)
+
+        hue = (time.clock() * 0.01) % 1
+
+        self.draw_time(hue, colon)
         self.screen.update()
 
     def tick(self):
         self.draw(False)
-        time.sleep(0.5)
-        self.draw(True)
-        time.sleep(0.5)
