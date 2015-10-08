@@ -1,7 +1,9 @@
+from settings import *
+S = Settings()
+
+
 def create_gamepad():
-    try:
-        from gamepad.virtualgamepad import instance
-        return instance
-    except:
-        from gamepad.gamepad import Gamepad
-        return Gamepad()
+    from gamepad.virtualgamepad import instance
+    return instance
+    # from gamepad.gamepad import Gamepad
+    # return Gamepad()

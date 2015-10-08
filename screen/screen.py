@@ -1,4 +1,5 @@
 import helpers
+import pygame
 
 from settings import *
 from neopixel import *
@@ -18,7 +19,13 @@ class Screen:
         self.height = height
 
         self.strip = Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
-        self.strip.begin()
+
+        pygame.display.init()  # needed for events
+
+        try:
+            self.strip.begin()
+        except RuntimeError:
+            print('\033[38;5;196merror: did you run it with sudo?\033[0m')
 
         self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
 
