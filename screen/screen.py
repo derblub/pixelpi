@@ -29,11 +29,11 @@ class Screen:
         except RuntimeError:
             print('\033[38;5;196merror: did you run it with sudo?\033[0m')
 
-            self.update_brightness()
-            self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
+        self.update_brightness()
+        self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
 
-            global instance
-            instance = self
+        global instance
+        instance = self
 
     def clear(self, color=helpers.Color(0, 0, 0)):
         for x in range(self.width):
