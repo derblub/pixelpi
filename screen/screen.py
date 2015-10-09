@@ -22,7 +22,7 @@ class Screen:
 
         self.strip = Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
 
-        # pygame.display.init()  # needed for events
+        pygame.display.init()  # needed for events
 
         try:
             self.strip.begin()
