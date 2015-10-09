@@ -23,14 +23,15 @@ class Settings:
                 'brightness': '5',
             },
             'animations': {
-                'hold': '100',
+                'hold': '200',
             },
             'webinterface': {
                 'enabled': 'True',
                 'ip': '0.0.0.0',
                 'port': '8888',
             },
-            'input': {
+            'others': {
+                'start_screen': 'menu',
                 'controller': 'xbox',
             },
             'dev': {

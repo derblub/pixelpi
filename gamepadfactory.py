@@ -3,7 +3,7 @@ S = Settings()
 
 
 def create_gamepad():
-    c = S.get('input', 'controller')
+    c = S.get('others', 'controller')
 
     if c == 'xbox':
         from gamepad.xboxcontroller import Gamepad

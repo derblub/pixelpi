@@ -19,14 +19,30 @@ class Menu(object):
         self.gamepad = create_gamepad()
         self.gamepad.on_press.append(self.on_key_down)
 
-        self.index = 0  # @TODO config?
+        self.index = 0
+        self.MENU_ITEMS_MAP = {
+            'menu': -1,
+            'cycle': 0,
+            'tetris': 1,
+            'snake': 2,
+            'pacman': 3,
+            'clock': 4,
+            'pie': 5,
+            'music': 6,
+            'brightness': 7,
+        }
+        self.start_screen = self.MENU_ITEMS_MAP[S.get('others', 'start_screen')]
+        if self.start_screen is not -1:
+            self.index += self.start_screen
+
         self.items = items
         self.module = None
 
         self.reset(redraw=False)
-        self.resume_animation()
+        if self.start_screen is -1:
+            self.resume_animation()
 
-        if not self.gamepad.available():
+        if self.start_screen != -1 or not self.gamepad.available():
             self.launch()
 
     def reset(self, redraw=True):
@@ -130,9 +146,10 @@ class Menu(object):
         self.gamepad.on_release = []
 
     def launch(self):
-        if not self.items[self.index].is_launchable(self):
+        if not self.items[self.index].is_launchable():
             return
-        self.start_animation()
+        if self.start_screen is -1:
+            self.start_animation()
         self.module = self.items[self.index].get_module(self.screen, self.gamepad)
         self.module.start()
 

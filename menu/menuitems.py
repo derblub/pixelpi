@@ -32,7 +32,6 @@ class MenuItem(object):
     def on_key_press(self, key, menu):
         pass
 
-    @staticmethod
     def is_launchable(self):
         return True
 
