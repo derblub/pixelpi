@@ -29,10 +29,16 @@ class Gamepad(AbstractGamepad):
         }
 
         pygame.joystick.init()
-        joy = pygame.joystick.Joystick(0)
-        joy.init()
+        try:
+            self.joy = pygame.joystick.Joystick(0)
+            self.joy.init()
+        except:
+            self.joy = None
 
         self.start()
+
+    def available(self):
+        return self.joy != None
 
     def start(self):
         self.running = True

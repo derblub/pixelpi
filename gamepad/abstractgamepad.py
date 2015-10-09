@@ -3,7 +3,6 @@ class AbstractGamepad(object):
     DOWN = 12
     LEFT = 13
     RIGHT = 14
-
     START = 10
     BACK = 2
 
@@ -22,7 +21,9 @@ class AbstractGamepad(object):
             if self.verbose:
                 print('Pressed ' + str(btn))
             for callback in self.on_press:
-                callback(btn)
+                event_handled = callback(btn)
+                if event_handled:
+                    return
         except TypeError:
             # don't crash on unexpected key-codes
             pass
@@ -33,10 +34,15 @@ class AbstractGamepad(object):
             if self.verbose:
                 print('Released ' + str(btn))
             for callback in self.on_release:
-                callback(btn)
+                event_handled = callback(btn)
+                if event_handled:
+                    return
         except TypeError:
             # don't crash on unexpected key-codes
             pass
 
     def tick(self):
         pass
+
+        def available(self):
+            return True

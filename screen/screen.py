@@ -1,9 +1,11 @@
 import helpers
-import pygame
 
 from settings import *
 from neopixel import *
+
 S = Settings()
+
+instance = None
 
 
 class Screen:
@@ -20,14 +22,18 @@ class Screen:
 
         self.strip = Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
 
-        pygame.display.init()  # needed for events
+        # pygame.display.init()  # needed for events
 
         try:
             self.strip.begin()
         except RuntimeError:
             print('\033[38;5;196merror: did you run it with sudo?\033[0m')
 
-        self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
+            self.update_brightness()
+            self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
+
+            global instance
+            instance = self
 
     def clear(self, color=helpers.Color(0, 0, 0)):
         for x in range(self.width):
@@ -42,3 +48,14 @@ class Screen:
                 else:
                     self.strip.setPixelColor(y * self.width + self.width - 1 - x, self.pixel[x][y])
         self.strip.show()
+
+    def update_brightness(self):
+        self.strip.setBrightness(int(4 + 3.1 * (int(S.get('screen', 'brightness')) + 1) ** 2))
+
+    def set_brightness(self, value):
+        value = min(max(value, 0), 8)
+        S.set('screen', 'brightness', value)
+        self.update_brightness()
+
+    def get_brightness(self):
+        return int(S.get('screen', 'brightness'))

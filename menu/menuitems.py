@@ -1,6 +1,11 @@
+import os
 import pygame.image
 
 from helpers import *
+if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+    import screen.screen
+else:
+    import screen.virtualscreen
 
 
 class MenuItem(object):
@@ -27,7 +32,8 @@ class MenuItem(object):
     def on_key_press(self, key, menu):
         pass
 
-    def is_launchable(self):
+    @staticmethod
+    def is_launchable():
         return True
 
 
@@ -38,7 +44,7 @@ class CycleItem(MenuItem):
 
     def get_module(self, screen, gamepad):
         from modules.cycle import Cycle
-        return Cycle(screen, 'animations')
+        return Cycle(screen, gamepad, 'animations')
 
 
 class TetrisItem(MenuItem):
@@ -95,32 +101,31 @@ class BrightnessItem(MenuItem):
     def get_module(self, screen, gamepad):
         pass
 
-    def __init__(self):
+    def __init__(self, screen):
         super(BrightnessItem, self).__init__()
         self.preview_template = MenuItem.load_preview('menu/preview/brightness.bmp')
-        self.value = 5
+        self.screen = screen
         self.draw()
 
     def draw(self):
         self.preview = [self.preview_template[x][:] for x in range(8)]
         for x in range(8):
-            if self.value > x:
+            if self.screen.get_brightness() > x:
                 self.preview[x][7] = RGBColor(255, 255, 255)
 
     def is_launchable(self):
         return False
 
     def update(self, menu):
-        menu.screen.strip.setBrightness(int(4 + 3.1 * (self.value + 1) ** 2))
         self.draw()
         menu.draw()
 
     def on_key_press(self, key, menu):
         if key == menu.gamepad.UP:
-            self.value = min(max(0, self.value + 1), 8)
+            self.screen.set_brightness(self.screen.get_brightness() + 1)
             self.update(menu)
         if key == menu.gamepad.DOWN:
-            self.value = min(max(0, self.value - 1), 8)
+            self.screen.set_brightness(self.screen.get_brightness() - 1)
             self.update(menu)
 
 
@@ -134,13 +139,23 @@ class MusicItem(MenuItem):
         return Music(screen)
 
 
-menu_items = [
-    CycleItem(),
-    TetrisItem(),
-    SnakeItem(),
-    PacmanItem(),
-    ClockItem(),
-    PieItem(),
-    BrightnessItem(),
-    MusicItem()
-]
+def create_menu_items():
+    menu_items = [
+        CycleItem(),
+        TetrisItem(),
+        SnakeItem(),
+        PacmanItem(),
+        ClockItem(),
+        PieItem(),
+        MusicItem()
+    ]
+    test = screen
+
+    if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+        if screen.screen.instance is not None:
+            menu_items.append(BrightnessItem(screen.screen.instance))
+    else:
+        if screen.virtualscreen.instance is not None:
+            menu_items.append(BrightnessItem(screen.virtualscreen.instance))
+
+    return menu_items

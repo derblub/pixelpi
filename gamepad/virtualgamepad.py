@@ -29,6 +29,9 @@ class VirtualGamepad(AbstractGamepad):
         if instance is not None:
             raise Exception("Don't create multiple virtual gamepads!")
 
+    def available(self):
+        return True
+
     def keycode_to_int(self, keycode):
         for relation in self.keycode_list:
             if relation[0] == keycode:

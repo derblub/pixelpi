@@ -1,27 +1,33 @@
-import os
-
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-from menu.menuitems import menu_items
-from screenfactory import create_screen
-from gamepadfactory import create_gamepad
-import pygame
 import time
 import math
+
+import pygame
+
+from settings import *
+from menu.menuitems import create_menu_items
+from screenfactory import create_screen
+from gamepadfactory import create_gamepad
 from helpers import *
+
+S = Settings()
+S.load()
 
 
 class Menu(object):
-    def __init__(self, items):
-        self.screen = create_screen()
+    def __init__(self, screen, items):
+        self.screen = screen
         self.gamepad = create_gamepad()
         self.gamepad.on_press.append(self.on_key_down)
 
-        self.index = 0
+        self.index = 0  # @TODO config?
         self.items = items
         self.module = None
 
         self.reset(redraw=False)
         self.resume_animation()
+
+        if not self.gamepad.available():
+            self.launch()
 
     def reset(self, redraw=True):
         self.dir = 0
@@ -75,7 +81,8 @@ class Menu(object):
 
         self.screen.update()
 
-    def ease(self, x):
+    @staticmethod
+    def ease(x):
         return x
 
     def tick(self):
@@ -110,6 +117,7 @@ class Menu(object):
             self.move(-1)
         if key == self.gamepad.START:
             self.launch()
+            return True
 
         self.items[self.index].on_key_press(key, self)
 
@@ -154,7 +162,7 @@ class Menu(object):
 
 
 if __name__ == '__main__':
-    menu = Menu(menu_items)
+    menu = Menu(create_screen(), create_menu_items())
     while True:
         menu.tick()
         pygame.time.wait(10)
