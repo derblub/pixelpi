@@ -23,6 +23,7 @@ class Settings:
                 'brightness': '5',
             },
             'animations': {
+                'show': '20',
                 'hold': '100',
             },
             'webinterface': {
@@ -32,6 +33,8 @@ class Settings:
             },
             'others': {
                 'start_screen': 'menu',
+                'clock_while_cycle': 'True',
+                'clock_every': '15',
                 'controller': 'xbox',
             },
             'dev': {
@@ -91,7 +94,7 @@ class Settings:
             self.file_handle = os.open(self.filename, flags)
         except OSError as er:
             if er.errno == errno.EEXIST:  # settings exist already
-                print self.filename + " found"
+                # print self.filename + " found"
                 self.file_handle = os.open(self.filename, os.O_RDWR)
 
             else:  # something went wrong > raise exception

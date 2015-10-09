@@ -50,7 +50,7 @@ class Music(Module):
                     value = audioop.max(data, 2)
                     value = clamp(value, 80, 1023)
                     value = translate(value, 80, 1023, 0, 254)
-                    print value
+                    # print value
                     if value == 255:
                         self.position = 0
                     elif self.position < 7:
