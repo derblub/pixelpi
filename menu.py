@@ -130,7 +130,7 @@ class Menu(object):
         self.gamepad.on_release = []
 
     def launch(self):
-        if not self.items[self.index].is_launchable():
+        if not self.items[self.index].is_launchable(self):
             return
         self.start_animation()
         self.module = self.items[self.index].get_module(self.screen, self.gamepad)

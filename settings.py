@@ -20,7 +20,7 @@ class Settings:
                 'led_freq': '800000',
                 'led_dma': '5',
                 'led_invert': 'False',
-                'brightness': '200',
+                'brightness': '5',
             },
             'animations': {
                 'hold': '100',
@@ -75,9 +75,13 @@ class Settings:
         cp = ConfigParser.SafeConfigParser(self.defaults)
         cp.read(self.filename)
         cp.set(section, option, str(value))
-        with os.fdopen(self.file_handle, 'wb') as file_obj:
+
+        self.file_handle = os.open(self.filename, os.O_RDWR)
+        with os.fdopen(self.file_handle, 'r+') as file_obj:
+            file_obj.read()
+            file_obj.seek(0)
             cp.write(file_obj)
-        pass
+            file_obj.truncate()
 
     def load(self):
         flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY

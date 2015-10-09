@@ -33,7 +33,7 @@ class MenuItem(object):
         pass
 
     @staticmethod
-    def is_launchable():
+    def is_launchable(self):
         return True
 
 
@@ -149,7 +149,6 @@ def create_menu_items():
         PieItem(),
         MusicItem()
     ]
-    test = screen
 
     if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         if screen.screen.instance is not None:

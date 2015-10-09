@@ -11,11 +11,11 @@ instance = None
 class VirtualScreen:
     def __init__(self,
                  width=int(S.get('screen', 'matrix_width')),
-                 height=int(S.get('screen', 'matrix_height')),
-                 brightness=int(S.get('screen', 'brightness'))):
+                 height=int(S.get('screen', 'matrix_height'))):
         self.width = width
         self.height = height
         self.pixel_size = int(S.get('dev', 'pixel_size'))
+        self.update_brightness()
 
         self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
 
@@ -51,8 +51,8 @@ class VirtualScreen:
         pygame.display.update()
 
     def update_brightness(self):
-        pass
-        # self.strip.setBrightness(int(4 + 3.1 * (int(S.get('screen', 'brightness')) + 1) ** 2))
+        b = int(4 + 3.1 * (int(S.get('screen', 'brightness')) + 1)**2)
+        # @TODO maybe simulate brightness
 
     def set_brightness(self, value):
         value = min(max(value, 0), 8)
