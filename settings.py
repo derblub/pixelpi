@@ -32,7 +32,7 @@ class Settings:
                 'port': '8888',
             },
             'others': {
-                'start_screen': 'menu',
+                'start_screen': 'cycle',
                 'clock_while_cycle': 'True',
                 'clock_every': '15',
                 'controller': 'xbox',
