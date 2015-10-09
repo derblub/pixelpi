@@ -1,4 +1,5 @@
 import helpers
+import pygame
 
 from settings import *
 from neopixel import *
