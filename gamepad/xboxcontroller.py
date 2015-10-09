@@ -13,21 +13,19 @@ class Gamepad(AbstractGamepad):
 
         # map between pygame buttons ids and xbox contorl ids
         self.BUTTONCONTROLMAP = {
-            # 0: 0,  # A
-            # 1: 1,  # B
+            0: self.START,  # A
+            1: self.BACK,  # B
             # 2: 2,  # X
             # 3: 3,  # Y
             # 4: 4,  # LB
             # 5: 5,  # RB
-            6: 10,  # BACK
-            7: 2,  # START
-            # 8: 8,  # XBOX
-            # 9: 9,  # LEFTTHUMB
-            # 10: 10,  # RIGHTTHUMB
-            11: 13,  # D-PAD LEFT
-            12: 14,  # D-PAD RIGHT
-            13: 11,  # D-PAD UP
-            14: 12,  # D-PAD DOWN
+            # 6: 6,  # LT
+            # 7: 7,  # RT
+            8: self.BACK,  # BACK
+            9: self.START,  # START
+            # 10: 8,  # XBOX
+            # 11: 11,  # LEFTTHUMB
+            # 12: 12,  # RIGHTTHUMB
         }
 
         pygame.joystick.init()
@@ -56,7 +54,23 @@ class Gamepad(AbstractGamepad):
             # react to the pygame events that come from the xbox controller
             for event in pygame.event.get():
 
-                if event.type in [JOYBUTTONUP, JOYBUTTONDOWN]:
+                # d-pad
+                if event.type == JOYHATMOTION:
+                    if event.value == (0, 1):
+                        self.press(self.UP)
+                    elif event.value == (0, -1):
+                        self.press(self.DOWN)
+                    elif event.value == (-1, 0):
+                        self.press(self.LEFT)
+                    elif event.value == (1, 0):
+                        self.press(self.RIGHT)
+                    elif event.value == (0, 0):
+                        for btn in [self.UP, self.DOWN, self.LEFT, self.RIGHT]:
+                            if self.button[btn]:
+                                self.release(btn)
+
+                # button down & up
+                elif event.type in [JOYBUTTONUP, JOYBUTTONDOWN]:
                     if event.button in self.BUTTONCONTROLMAP:
                         self.check(self.BUTTONCONTROLMAP[event.button], event.type)
 
