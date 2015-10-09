@@ -23,7 +23,7 @@ class Settings:
                 'brightness': '5',
             },
             'animations': {
-                'hold': '200',
+                'hold': '100',
             },
             'webinterface': {
                 'enabled': 'True',
@@ -99,5 +99,5 @@ class Settings:
                 raise
         else:  # no exception happend - file created successfully
             with os.fdopen(self.file_handle, 'w') as file_obj:
-                print self.filename + 'not found - creating & writing defaults'
+                print '%s not found - creating & writing defaults' % self.filename
                 self.put_defaults(file_obj)
