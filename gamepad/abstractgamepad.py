@@ -4,6 +4,9 @@ class AbstractGamepad(object):
     LEFT = 13
     RIGHT = 14
 
+    START = 10
+    BACK = 2
+
     btn_count = 15
 
     def __init__(self, verbose=False):

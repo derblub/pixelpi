@@ -100,7 +100,7 @@ class Menu(object):
 
     def on_key_down(self, key):
         if self.module is not None:
-            if key == 10:
+            if key == self.gamepad.BACK:
                 self.stop()
             return
 
@@ -108,7 +108,7 @@ class Menu(object):
             self.move(1)
         if key == self.gamepad.LEFT:
             self.move(-1)
-        if key == 2:
+        if key == self.gamepad.START:
             self.launch()
 
         self.items[self.index].on_key_press(key, self)

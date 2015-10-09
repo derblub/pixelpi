@@ -1,4 +1,3 @@
-import os
 import time
 import pygame
 
@@ -14,35 +13,26 @@ class Gamepad(AbstractGamepad):
 
         # map between pygame buttons ids and xbox contorl ids
         self.BUTTONCONTROLMAP = {
-            0: 6,  # A
-            1: 7,  # B
-            2: 8,  # X
-            3: 9,  # Y
-            4: 10,  # LB
-            5: 11,  # RB
-            6: 12,  # BACK
-            7: 13,  # START
-            8: 14,  # XBOX
-            9: 15,  # LEFTTHUMB
-            10: 16,  # RIGHTTHUMB
+            # 0: 0,  # A
+            # 1: 1,  # B
+            # 2: 2,  # X
+            # 3: 3,  # Y
+            # 4: 4,  # LB
+            # 5: 5,  # RB
+            6: 10,  # BACK
+            7: 2,  # START
+            # 8: 8,  # XBOX
+            # 9: 9,  # LEFTTHUMB
+            # 10: 10,  # RIGHTTHUMB
+            11: 13,  # D-PAD LEFT
+            12: 14,  # D-PAD RIGHT
+            13: 11,  # D-PAD UP
+            14: 12,  # D-PAD DOWN
         }
 
-        # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
-        os.environ["SDL_VIDEODRIVER"] = "dummy"
-        # init pygame
-        pygame.init()
-        # create a 1x1 pixel screen, its not used so it doesnt matter
-        screen = pygame.display.set_mode((1, 1))
-        # init the joystick control
         pygame.joystick.init()
-        # how many joysticks are there
-        # print pygame.joystick.get_count()
-        # get the first joystick
         joy = pygame.joystick.Joystick(0)
-        # init that joystick
         joy.init()
-
-        # self.pipe = open('/dev/input/by-id/usb-Logitech_Logitech_Dual_Action-event-joystick', 'r')
 
         self.start()
 
@@ -54,11 +44,10 @@ class Gamepad(AbstractGamepad):
         self.running = False
 
     def check(self, button, pressed):
-        # if the button is down its 1, if the button is up its 0
-        print button, pressed
-        if pressed == 1:
+        # if the button is down its 10, if the button is up its 11
+        if pressed == 10:
             self.press(int(button))
-        elif pressed == 0:
+        elif pressed == 11:
             self.release(int(button))
 
     def run(self):
@@ -67,14 +56,9 @@ class Gamepad(AbstractGamepad):
             # react to the pygame events that come from the xbox controller
             for event in pygame.event.get():
 
-                # d pad
-                if event.type == JOYHATMOTION:
-                    print event.value
-
-                # button pressed and unpressed
-                elif event.type == JOYBUTTONUP or event.type == JOYBUTTONDOWN:
+                if event.type in [JOYBUTTONUP, JOYBUTTONDOWN]:
                     if event.button in self.BUTTONCONTROLMAP:
-                        self.check(event.button, event.type)
+                        self.check(self.BUTTONCONTROLMAP[event.button], event.type)
 
         time.sleep(0.010)
 
