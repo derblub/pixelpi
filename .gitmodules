@@ -1,0 +1,3 @@
+[submodule "libs/XboxController"]
+	path = libs/XboxController
+	url = https://github.com/martinohanlon/XboxController

@@ -30,6 +30,9 @@ class Settings:
                 'ip': '0.0.0.0',
                 'port': '8888',
             },
+            'input': {
+                'controller': 'xbox',
+            },
             'dev': {
                 'debug': 'False',
                 'pixel_size': '15',
