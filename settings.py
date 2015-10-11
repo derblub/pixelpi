@@ -32,13 +32,26 @@ class Settings:
                 'port': '8888',
             },
             'others': {
+                ';start_screen': 'menu, [cycle], tetris, snake, pacman, clock, pie, music, brightness',
                 'start_screen': 'cycle',
-                'clock_while_cycle': 'True',
+
+                ';clock_while_cycle': 'True, [False]',
+                'clock_while_cycle': 'False',
+
+                ';clock_every': 'int, [15]',
                 'clock_every': '15',
-                'controller': 'xbox',
+
+                ';controller': 'none, xbox, logitech',
+                'controller': 'none',
+
+                ';audio_input': 'serial, [usb_mic]',
+                'audio_input': 'usb_mic',
             },
             'dev': {
+                ';debug': 'True, [False]',
                 'debug': 'False',
+
+                ';pixel_size': 'int, [15]',
                 'pixel_size': '15',
 
             }
@@ -48,10 +61,22 @@ class Settings:
     def put_defaults(self, file_obj):
         lb = '\n'
 
+        header = '; delete this file to restore defaults! ;'.upper()
+        line = (';' * len(header)) + lb
+        file_obj.write(line + header + lb + line + lb)
+
         for section_name, section_value in sorted(self.defaults.iteritems()):
-            file_obj.write('[' + section_name + ']' + lb)
+            file_obj.write(lb + '[' + section_name + ']' + lb)
             for setting, value in sorted(section_value.iteritems()):
-                file_obj.write(setting + ' = ' + str(value) + lb)
+                try:
+                    comment = self.defaults[section_name][';' + setting]
+                    file_obj.write('; ' + setting + ': ' + comment + lb)
+                except KeyError:
+                    comment = False
+                if not setting.startswith(';'):
+                    file_obj.write(setting + ' = ' + str(value) + lb)
+                    if comment:
+                        file_obj.write(lb)
             file_obj.write(lb)
 
     def get(self, section, option):

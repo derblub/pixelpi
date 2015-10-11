@@ -1,9 +1,15 @@
 import time
 import math
 import audioop
+import pyaudio
+import struct
+
 from thread import start_new_thread
+from numpy import zeros, short, fromstring, array
+from numpy.fft import fft
 
 import alsaaudio
+
 from helpers import *
 from modules.module import Module
 
@@ -12,24 +18,15 @@ class Music(Module):
     def __init__(self, screen):
         super(Music, self).__init__(screen)
 
-        # Open the device in nonblocking capture mode. The last argument could
-        # just as well have been zero for blocking mode. Then we could have
-        # left out the sleep call in the bottom of the loop
-        self.inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK)
-
-        # Set attributes: Mono, 8000 Hz, 16 bit little endian samples
-        self.inp.setchannels(1)
-        self.inp.setrate(8000)
-        self.inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-
-        # The period size controls the internal number of frames per period.
-        # The significance of this parameter is documented in the ALSA api.
-        # For our purposes, it is suficcient to know that reads from the device
-        # will return this many frames. Each frame being 2 bytes long.
-        # This means that the reads below will return either 320 bytes of data
-        # or 0 bytes of data. The latter is possible because we are in nonblocking
-        # mode.
-        self.inp.setperiodsize(160)
+        p = pyaudio.PyAudio()
+        self.CHUNK = 128
+        self.stream = p.open(
+            format=pyaudio.paInt16,
+            channels=1,
+            rate=44100,
+            input=True,
+            frames_per_buffer=self.CHUNK
+        )
 
         self.data = [0 for i in range(7)]
         self.position = 0
@@ -40,22 +37,26 @@ class Music(Module):
         self.inertia = [0 for x in range(16)]
 
     def check_input(self):
+        from random import randint
         while self.running:
             try:
-                # read data from device
-                l, data = self.inp.read()
-                if l:
-                    # Return the maximum of the absolute value of all samples in a fragment.
-                    value = audioop.max(data, 2)
-                    value = clamp(value, 80, 1023)
-                    value = translate(value, 80, 1023, 0, 254)
-                    # print value
-                    if value == 255:
-                        self.position = 0
-                    elif self.position < 7:
-                        self.data[self.position] = value
-                        self.position += 1
+                data = fromstring(self.stream.read(self.CHUNK), dtype=short)
+                # value = data / 32768.0
+                value = fft(data)[1:1 + self.CHUNK / 2]
+
+                # value = struct.unpack('h' * self.CHUNK, data)
+                # value = clamp(value, 80, 1023)
+                # value = translate(value, 80, 1023, 0, 254)
+                # value = randint(0, 254)
+                print value
+                if value == 255:
+                    self.position = 0
+                elif self.position < 7:
+                    self.data[self.position] = value
+                    self.position += 1
+
                 time.sleep(.001)
+
             except:
                 pass
 
@@ -89,4 +90,5 @@ class Music(Module):
         self.screen.update()
 
     def on_stop(self):
-        self.inp.close()
+        # self.serial.close()
+        self.stream.close()
