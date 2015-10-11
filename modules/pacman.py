@@ -4,6 +4,7 @@ import random
 
 from helpers import *
 from module import *
+from modules.animation import Animation
 
 
 class Ghost(object):
@@ -158,15 +159,16 @@ class Pacman(Module):
     def new_game(self):
         self.lives = 3
 
-        self.new_level()
+        self.new_level(reset_food=True)
 
-    def new_level(self):
+    def new_level(self, reset_food):
         self.pacman = Point(8, 9)
         self.dir = Point(-1, 0)
         self.new_dir = self.dir
-        self.next_step = time.clock() + self.step_interval
-        self.food = self.food_spots[:]
-        self.pills = self.pill_spots[:]
+        self.next_step = time.clock() + self.step_interval + 0.8
+        if reset_food:
+            self.food = self.food_spots[:]
+            self.pills = self.pill_spots[:]
         self.ghosts = [
             Ghost(self, Color(0, 255, 255), 2),
             Ghost(self, Color(255, 0, 0), 4),
@@ -180,7 +182,7 @@ class Pacman(Module):
                 if self.walls[y][x] == 1:
                     self.screen.pixel[x][y] = self.wall_color
 
-    def draw(self):
+    def draw(self, update=True):
         self.screen.clear()
         self.draw_walls()
 
@@ -190,16 +192,14 @@ class Pacman(Module):
         for food in self.food:
             self.screen.pixel[food.x][food.y] = self.food_color
 
-        for i in range(self.lives):
-            self.screen.pixel[1 + 2 * i][15] = self.pacman_color
+            self.screen.pixel[self.pacman.x][self.pacman.y] = darken_color(self.pacman_color, 0.2 + 0.8 * math.sin(
+                time.clock() / self.step_interval / 2 * math.pi + 0.5 * math.pi) ** 2)
 
-        self.screen.pixel[self.pacman.x][self.pacman.y] = darken_color(self.pacman_color, 0.2 + 0.8 * math.sin(
-            time.clock() / self.step_interval / 2 * math.pi + 0.5 * math.pi) ** 2)
+            for ghost in self.ghosts:
+                ghost.draw()
 
-        for ghost in self.ghosts:
-            ghost.draw()
-
-        self.screen.update()
+            if update:
+                self.screen.update()
 
     def get_nex_step(self, direction):
         return Point((self.pacman.x + direction.x + 16) % 16, (self.pacman.y + direction.y + 16) % 16)
@@ -225,11 +225,39 @@ class Pacman(Module):
                     ghost.set_mode(ghost.FLEE)
 
         if len(self.food) == 0 and len(self.pills) == 0:
-            self.new_level()
+            self.level_complete()
+
+    def level_complete(self):
+        animation = Animation(self.screen, "pacman/interlevel", interval=40, autoplay=False)
+        animation.play_once()
+
+        self.new_level(reset_food=True)
 
     def die(self):
+        self.draw(update=False)
+        self.screen.pixel[self.pacman.x][self.pacman.y] = self.pacman_color
+        self.screen.update()
+
+        time.sleep(1)
+        start = time.clock()
+        end = start + 1.5
+
+        while time.clock() < end:
+            self.draw(update=False)
+            brightness = (end - time.clock()) / (end - start)
+            self.screen.pixel[self.pacman.x][self.pacman.y] = Color(self.pacman_color.r * brightness,
+                                                                    self.pacman_color.g * brightness,
+                                                                    self.pacman_color.b * brightness)
+            self.screen.update()
+
+        time.sleep(1)
+        animation = Animation(self.screen, "pacman/die", interval=100, autoplay=False)
+        animation.play_once()
+        time.sleep(0.5)
+
         self.lives -= 1
-        self.new_level()
+        self.new_level(reset_food=False)
+        self.draw()
 
     def check_ghosts(self):
         for ghost in self.ghosts:

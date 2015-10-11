@@ -1,10 +1,9 @@
 import time
 import math
-import alsaaudio
 import audioop
-
 from thread import start_new_thread
 
+import alsaaudio
 from helpers import *
 from modules.module import Module
 
@@ -88,3 +87,6 @@ class Music(Module):
             self.inertia[x] -= self.delta_t * 15
 
         self.screen.update()
+
+    def on_stop(self):
+        self.inp.close()

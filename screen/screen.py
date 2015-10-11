@@ -2,7 +2,6 @@ import helpers
 import pygame
 
 from settings import *
-from neopixel import *
 
 S = Settings()
 
@@ -18,10 +17,11 @@ class Screen:
                  led_dma=int(S.get('screen', 'led_dma')),
                  led_invert=(True if S.get('screen', 'led_invert').lower() == 'true' else False),
                  led_brightness=int(S.get('screen', 'brightness'))):
+        import neopixel as np
         self.width = width
         self.height = height
 
-        self.strip = Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
+        self.strip = np.Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
 
         pygame.display.init()  # needed for events
 
