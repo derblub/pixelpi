@@ -1,64 +1,68 @@
 import time
 import math
+import alsaaudio
 import audioop
-import pyaudio
 import struct
+import pyaudio
+import numpy
 
 from thread import start_new_thread
-from numpy import zeros, short, fromstring, array
-from numpy.fft import fft
-
-import alsaaudio
 
 from helpers import *
 from modules.module import Module
+from settings import *
+S = Settings()
 
 
 class Music(Module):
     def __init__(self, screen):
         super(Music, self).__init__(screen)
 
-        p = pyaudio.PyAudio()
-        self.CHUNK = 128
-        self.stream = p.open(
-            format=pyaudio.paInt16,
-            channels=1,
-            rate=44100,
-            input=True,
-            frames_per_buffer=self.CHUNK
-        )
-
         self.data = [0 for i in range(7)]
         self.position = 0
-        start_new_thread(self.check_input, ())
         self.last_frame = time.time()
         self.delta_t = 0
         self.colors = [hsv_to_color(x / 16.0, 1, 1) for x in range(16)]
         self.inertia = [0 for x in range(16)]
 
-    def check_input(self):
-        from random import randint
+        self.audio_input = S.get('others', 'audio_input').lower()
+        if self.audio_input == 'serial':
+            import serial
+            self.input = serial.Serial('/dev/ttyAMA0', 9600)
+            start_new_thread(self.check_serial, ())
+
+        elif self.audio_input == 'usb_mic':
+            self.CHUNK = 128
+            self.p = pyaudio.PyAudio()
+            self.input = self.p.open(
+                format=pyaudio.paInt16,
+                channels=1,
+                rate=44100,
+                input=True,
+                frames_per_buffer=self.CHUNK
+            )
+            start_new_thread(self.check_levels, ())
+
+        print "audio input: ", self.audio_input
+
+    def check_serial(self):
         while self.running:
             try:
-                data = fromstring(self.stream.read(self.CHUNK), dtype=short)
-                # value = data / 32768.0
-                value = fft(data)[1:1 + self.CHUNK / 2]
-
-                # value = struct.unpack('h' * self.CHUNK, data)
-                # value = clamp(value, 80, 1023)
-                # value = translate(value, 80, 1023, 0, 254)
-                # value = randint(0, 254)
-                print value
-                if value == 255:
+                byte = ord(self.input.read())
+                if byte == 255:
                     self.position = 0
                 elif self.position < 7:
-                    self.data[self.position] = value
+                    self.data[self.position] = byte
                     self.position += 1
-
                 time.sleep(.001)
-
             except:
                 pass
+
+    def check_levels(self):
+        while self.running:
+            data = self.input.read(self.CHUNK)
+            print numpy.fromstring(data, numpy.int16)
+            time.sleep(.001)
 
     def tick(self):
         self.draw()
@@ -90,5 +94,10 @@ class Music(Module):
         self.screen.update()
 
     def on_stop(self):
-        # self.serial.close()
-        self.stream.close()
+        if self.audio_input == 'serial':
+            self.input.close()
+
+        elif self.audio_input == 'usb_mic':
+            self.input.stop_stream()
+            self.input.close()
+            self.p.terminate()

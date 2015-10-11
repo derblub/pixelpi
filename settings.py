@@ -61,8 +61,8 @@ class Settings:
     def put_defaults(self, file_obj):
         lb = '\n'
 
-        header = '; delete this file to restore defaults! ;'.upper()
-        line = (';' * len(header)) + lb
+        header = '# delete this file to restore defaults! #'.upper()
+        line = ('#' * len(header)) + lb
         file_obj.write(line + header + lb + line + lb)
 
         for section_name, section_value in sorted(self.defaults.iteritems()):
