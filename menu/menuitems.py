@@ -76,6 +76,16 @@ class PacmanItem(MenuItem):
         return Pacman(screen, gamepad)
 
 
+class GameOfLifeItem(MenuItem):
+    def __init__(self):
+        super(GameOfLifeItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/gameoflife.bmp')
+
+    def get_module(self, screen, gamepad):
+        from modules.gameoflife import GameOfLive
+        return GameOfLive(screen, gamepad)
+
+
 class ClockItem(MenuItem):
     def __init__(self):
         super(ClockItem, self).__init__()
@@ -144,6 +154,7 @@ def create_menu_items():
         TetrisItem(),
         SnakeItem(),
         PacmanItem(),
+        GameOfLifeItem(),
         ClockItem(),
         PieItem(),
         MusicItem()

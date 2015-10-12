@@ -32,7 +32,7 @@ class Settings:
                 'port': '8888',
             },
             'others': {
-                ';start_screen': 'menu, [cycle], tetris, snake, pacman, clock, pie, music, brightness',
+                ';start_screen': 'menu, [cycle], tetris, snake, pacman, gameoflife, clock, pie, music, brightness',
                 'start_screen': 'cycle',
 
                 ';clock_while_cycle': 'True, [False]',

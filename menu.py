@@ -25,10 +25,11 @@ class Menu(object):
             'tetris': 1,
             'snake': 2,
             'pacman': 3,
-            'clock': 4,
-            'pie': 5,
-            'music': 6,
-            'brightness': 7,
+            'gameoflife': 4,
+            'clock': 5,
+            'pie': 6,
+            'music': 7,
+            'brightness': 8,
         }
         self.start_screen = self.MENU_ITEMS_MAP[S.get('others', 'start_screen')]
         if self.start_screen is not -1:

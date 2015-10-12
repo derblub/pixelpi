@@ -71,7 +71,7 @@ class Cycle(Module):
 
             if self.history_position < len(self.history) - 1:
                 self.history_position += 1
-                index = self.history[self.history_position]
+                # index = self.history[self.history_position]
             else:
                 if pick_random:
                     index = random.randint(0, len(self.animations) - 1)
