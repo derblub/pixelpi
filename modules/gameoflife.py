@@ -1,4 +1,5 @@
 import time
+import math
 from random import randint, choice
 from itertools import chain
 
@@ -22,22 +23,17 @@ def random_color():
 
 
 class GameOfLive(Module):
-    colors = [
-        random_color(),
-        random_color(),
-        random_color(),
-    ]
-
     def __init__(self, screen, gamepad):
         super(GameOfLive, self).__init__(screen)
         self.gamepad = gamepad
 
         self.LOAD_FACTOR = 3  # smaller means more crowded
-        self.NUDGING = self.LOAD_FACTOR * 5  # smaller means bigger nudge
+        self.NUDGING = self.LOAD_FACTOR * 2  # smaller means bigger nudge
 
         self.width = self.screen.width
         self.height = self.screen.height
 
+        self.colors = self.new_colors()
         self.board = self.random_board(self.LOAD_FACTOR)
         self.detector = BoredomDetector()
 
@@ -49,6 +45,12 @@ class GameOfLive(Module):
             ((randint(0, self.width), randint(0, self.height)), 0)
             for _ in xrange(int(self.width * self.height / factor))
         )
+
+    def new_colors(self):
+        c1 = random_color()
+        c2 = darken_color(c1, 1.3)
+        c3 = darken_color(c2, 2)
+        return [c1, c2, c3]
 
     def next_board(self, wrap):
         """Given a board, return the board one interation later.
@@ -111,9 +113,8 @@ class GameOfLive(Module):
 
             # If the pattern is stuck in a loop, give it a nudge:
             if self.detector.is_bored_of(self.board):
-                print "boring! ",
+                self.colors = self.new_colors()
                 self.board.update(self.random_board(self.NUDGING))
-                print "..nudged.."
 
         self.draw()
         time.sleep(.001)
