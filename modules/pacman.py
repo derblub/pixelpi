@@ -65,7 +65,7 @@ class Ghost(object):
         return p
 
     def get_destination(self):
-        if self.destination != None and self.destination != self.pos:
+        if self.destination is not None and self.destination != self.pos:
             return self.destination
 
         if self.mode == self.CHASE:
@@ -178,6 +178,9 @@ class Pacman(Module):
             Ghost(self, Color(255, 184, 81), 4)
         ]
 
+        self.draw(update=False)
+        self.screen.fade_in(0.8)
+
     def draw_walls(self):
         for x in range(16):
             for y in range(16):
@@ -253,14 +256,25 @@ class Pacman(Module):
                                                                            (end - time.clock()) / (end - start))
             self.screen.update()
 
-        time.sleep(1)
+        self.screen.fade_out(0.8)
+        time.sleep(0.5)
+
         animation = Animation(self.screen, "pacman/die", interval=100, autoplay=False)
         animation.play_once()
         time.sleep(0.5)
 
         self.lives -= 1
-        self.new_level(reset_food=False)
-        self.draw()
+        if self.lives >= 0:
+            self.new_level(reset_food=False)
+            self.draw()
+        else:
+            self.game_over()
+
+    def game_over(self):
+        animation = Animation(self.screen, "pacman/gameover", interval=100, autoplay=False)
+        animation.play_once()
+        time.sleep(2.0)
+        self.new_game()
 
     def check_ghosts(self):
         for ghost in self.ghosts:
@@ -312,9 +326,8 @@ class Pacman(Module):
             for direction in directions:
                 next = Point((place.x + direction.x + 16) % 16, (place.y + direction.y + 16) % 16)
 
-                if self.walls[next.y][next.x] == 0 \
-                        and distance_map[next.x][next.y] > distance_map[place.x][place.y] + 1 \
-                        and not visited[next.x][next.y]:
+                if self.walls[next.y][next.x] == 0 and distance_map[next.x][next.y] > distance_map[place.x][
+                    place.y] + 1 and not visited[next.x][next.y]:
                     distance_map[next.x][next.y] = distance_map[place.x][place.y] + 1
                     directions_map[next.x][next.y] = Point(-direction.x, -direction.y)
                     to_visit.append(next)

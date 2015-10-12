@@ -3,7 +3,6 @@ import math
 
 import pygame
 
-from settings import *
 from menu.menuitems import create_menu_items
 from screenfactory import create_screen
 from gamepadfactory import create_gamepad
@@ -139,7 +138,7 @@ class Menu(object):
 
     def stop(self):
         self.module.stop()
-        pygame.time.wait(200)
+        self.screen.fade_out(0.3)
         self.module = None
         self.resume_animation()
         self.gamepad.on_press = [self.on_key_down]

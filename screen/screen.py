@@ -1,14 +1,14 @@
-import helpers
 import pygame
 
 from settings import *
+from abstractscreen import AbstractScreen
 
 S = Settings()
 
 instance = None
 
 
-class Screen:
+class Screen(AbstractScreen):
     def __init__(self,
                  width=int(S.get('screen', 'matrix_width')),
                  height=int(S.get('screen', 'matrix_height')),
@@ -18,8 +18,7 @@ class Screen:
                  led_invert=(True if S.get('screen', 'led_invert').lower() == 'true' else False),
                  led_brightness=int(S.get('screen', 'brightness'))):
         import neopixel as np
-        self.width = width
-        self.height = height
+        super(Screen, self).__init__(width, height)
 
         self.strip = np.Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness)
 
@@ -31,15 +30,9 @@ class Screen:
             print('\033[38;5;196merror: did you run it with sudo?\033[0m')
 
         self.update_brightness()
-        self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
 
         global instance
         instance = self
-
-    def clear(self, color=helpers.Color(0, 0, 0)):
-        for x in range(self.width):
-            for y in range(self.height):
-                self.pixel[x][y] = color
 
     def update(self):
         for y in range(self.height):
@@ -54,6 +47,7 @@ class Screen:
         self.strip.setBrightness(int(4 + 3.1 * (int(S.get('screen', 'brightness')) + 1) ** 2))
 
     def set_brightness(self, value):
+
         value = min(max(value, 0), 8)
         S.set('screen', 'brightness', value)
         self.update_brightness()
