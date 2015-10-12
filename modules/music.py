@@ -3,14 +3,14 @@ import math
 import alsaaudio
 import audioop
 import struct
-import pyaudio
-import numpy
-
 from thread import start_new_thread
+
+import numpy
 
 from helpers import *
 from modules.module import Module
 from settings import *
+
 S = Settings()
 
 
@@ -18,7 +18,7 @@ class Music(Module):
     def __init__(self, screen):
         super(Music, self).__init__(screen)
 
-        self.data = [0 for i in range(7)]
+        self.data = [0 for i in range(8)]
         self.position = 0
         self.last_frame = time.time()
         self.delta_t = 0
@@ -32,18 +32,38 @@ class Music(Module):
             start_new_thread(self.check_serial, ())
 
         elif self.audio_input == 'usb_mic':
-            self.CHUNK = 128
-            self.p = pyaudio.PyAudio()
-            self.input = self.p.open(
-                format=pyaudio.paInt16,
-                channels=1,
-                rate=44100,
-                input=True,
-                frames_per_buffer=self.CHUNK
-            )
+            self.RATE = 44100
+            self.CHANNELS = 2
+            self.CHUNK = 512  # multiple of 16
+            self.input = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL)
+            self.input.setchannels(self.CHANNELS)
+            self.input.setrate(self.RATE)
+            self.input.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+            self.input.setperiodsize(self.CHUNK)
+
             start_new_thread(self.check_levels, ())
 
-        print "audio input: ", self.audio_input
+            # print "audio input: ", self.audio_input
+
+    @staticmethod
+    def calculate_levels(data, chunk):
+        # raw data to numpy array
+        data = struct.unpack("%dh" % (len(data) / 2), data)
+        data = numpy.array(data, dtype='h')
+
+        # apply fft - real data so rfft used
+        fourier = numpy.fft.rfft(data)
+        # remove last element in array to make it the smae size as chunk
+        fourier = numpy.delete(fourier, len(fourier) - 1)
+
+        # find amplitude
+        abs_p = numpy.abs(fourier)
+        power = numpy.log10(abs_p.clip(min=0.0000000001)) ** 2
+
+        # arange array matrix
+        power = numpy.reshape(power, (8, chunk / 8))
+        matrix = numpy.int_(numpy.average(power, axis=1) / 4)
+        return matrix
 
     def check_serial(self):
         while self.running:
@@ -60,9 +80,30 @@ class Music(Module):
 
     def check_levels(self):
         while self.running:
-            data = self.input.read(self.CHUNK)
-            print numpy.fromstring(data, numpy.int16)
+
+            # read from device
+            l, data = self.input.read()
+            self.input.pause(1)  # pause capture whilst rpi processes data
+            if l:
+                # catch frame error
+                try:
+                    matrix = self.calculate_levels(data, self.CHUNK)
+                    for i in range(7):
+                        row = (1 << matrix[i]) - 1
+                        row = max(0, min(row, len(matrix) - 1))
+                        col = 0xFF ^ (1 << i)
+
+                        col = clamp(col, 0, 512)
+                        col = translate(col, 0, 512, 0, 255)
+                        self.data[row] = col
+
+                except audioop.error, e:
+                    if e.message != "not a whole number of frames":
+                        raise e
+
             time.sleep(.001)
+            # time.sleep(.5)
+            self.input.pause(0)  # resume capture
 
     def tick(self):
         self.draw()
@@ -98,6 +139,4 @@ class Music(Module):
             self.input.close()
 
         elif self.audio_input == 'usb_mic':
-            self.input.stop_stream()
             self.input.close()
-            self.p.terminate()
