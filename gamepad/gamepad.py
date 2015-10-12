@@ -44,74 +44,37 @@ class Gamepad(AbstractGamepad):
 
                 # 8 bits make a byte
                 if len(byte) == 8:
-
-                    # Button 1
-                    if byte[2] == '20':
+                    if byte[2] in ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29']:
                         self.check(byte, byte[2])
 
-                    # Button 2
-                    if byte[2] == '21':
-                        self.check(byte, byte[2])
+                        if byte[0] == '03':
+                            # Arrow Up
+                            if byte == ['03', '00', '01', '00', '01', '00', '00', '00']:
+                                self.press(self.UP)
 
-                    # Button 3
-                    if byte[2] == '22':
-                        self.check(byte, byte[2])
+                            # Arrow Down
+                            if byte == ['03', '00', '01', '00', 'FE', '00', '00', '00']:
+                                self.press(self.DOWN)
 
-                    # Button 4
-                    if byte[2] == '23':
-                        self.check(byte, byte[2])
+                            # Arrow Left
+                            if byte == ['03', '00', '00', '00', '01', '00', '00', '00']:
+                                self.press(self.LEFT)
 
-                    # Button 5
-                    if byte[2] == '24':
-                        self.check(byte, byte[2])
+                            # Arrow Right
+                            if byte == ['03', '00', '00', '00', 'FE', '00', '00', '00']:
+                                self.press(self.RIGHT)
 
-                    # Button 6
-                    if byte[2] == '25':
-                        self.check(byte, byte[2])
+                            # Release Arrow
+                            if byte == ['03', '00', '01', '00', '80', '00', '00', '00'] or\
+                               byte == ['03', '00', '00', '00', '80', '00', '00', '00']:
+                                for btn in [self.UP, self.DOWN, self.LEFT, self.RIGHT]:
+                                    if self.button[btn]:
+                                        self.release(btn)
 
-                    # Button 7
-                    if byte[2] == '26':
-                        self.check(byte, byte[2])
+                # empty byte
+                byte = []
 
-                    # Button 8
-                    if byte[2] == '27':
-                        self.check(byte, byte[2])
-
-                    # Button 9
-                    if byte[2] == '28':
-                        self.check(byte, byte[2])
-
-                    # Button 9
-                    if byte[2] == '29':
-                        self.check(byte, byte[2])
-
-                    if byte[0] == '03':
-                        # Arrow Up
-                        if byte == ['03', '00', '01', '00', '01', '00', '00', '00']:
-                            self.press(self.UP)
-
-                        # Arrow Down
-                        if byte == ['03', '00', '01', '00', 'FE', '00', '00', '00']:
-                            self.press(self.DOWN)
-
-                        # Arrow Left
-                        if byte == ['03', '00', '00', '00', '01', '00', '00', '00']:
-                            self.press(self.LEFT)
-
-                        # Arrow Right
-                        if byte == ['03', '00', '00', '00', 'FE', '00', '00', '00']:
-                            self.press(self.RIGHT)
-
-                        # Release Arrow
-                        if byte == ['03', '00', '01', '00', '80', '00', '00', '00'] or byte == ['03', '00', '00', '00',
-                                                                                                '80', '00', '00', '00']:
-                            for btn in [self.UP, self.DOWN, self.LEFT, self.RIGHT]:
-                                if self.button[btn]:
-                                    self.release(btn)
-
-                    # empty byte
-                    byte = []
-        time.sleep(0.010)
+    time.sleep(0.010)
 
 
 if __name__ == '__main__':
