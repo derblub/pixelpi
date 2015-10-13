@@ -17,8 +17,9 @@ A board is represented like this::
 
 def random_color():
     color = []
-    while 0 not in color or 255 not in color:
-        color = [choice([0, 255]) for i in range(3)]
+    choices = [0, 0, 48, 127, 198, 248]
+    while len(color) < 3:
+        color = [choices[randint(0, len(choices) - 1)] for i in range(3)]
     return Color(color[0], color[1], color[2])
 
 
