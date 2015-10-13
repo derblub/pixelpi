@@ -1,27 +1,22 @@
 # -*- coding: utf-8 -*-
+import sys
 import pygame
 
-from settings import *
 from screenfactory import create_screen
+from modules.scroll_message import *
 
-S = Settings()
-S.load()
 
-if S.get('webinterface', 'enabled').lower() == 'true':
-    import thread
-    from server.interface import *
-    thread.start_new_thread(start_server, ())
-
-screen = create_screen()
-
-done = False
-while True:
-    pygame.time.wait(10)
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            # quit on escape
-            if (event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
-                done = True
-                break  # break for
-    if done:
-        break  # break while
+if __name__ == '__main__':
+    ScrollMessage(create_screen(), "Hello World!")
+    try:
+        while True:
+            pygame.time.wait(10)
+    except KeyboardInterrupt:
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
