@@ -1,3 +1,4 @@
+import sys
 import time
 import math
 
@@ -180,6 +181,16 @@ class Menu(object):
 
 if __name__ == '__main__':
     menu = Menu(create_screen(), create_menu_items())
-    while True:
-        menu.tick()
-        pygame.time.wait(10)
+    try:
+        while True:
+            menu.tick()
+            pygame.time.wait(10)
+    except KeyboardInterrupt:
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
