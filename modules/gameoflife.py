@@ -28,8 +28,8 @@ class GameOfLive(Module):
         super(GameOfLive, self).__init__(screen)
         self.gamepad = gamepad
 
-        self.LOAD_FACTOR = 9  # smaller means more crowded
-        self.NUDGING = self.LOAD_FACTOR * 2  # smaller means bigger nudge
+        self.LOAD_FACTOR = 7  # smaller means more crowded
+        self.NUDGING = self.LOAD_FACTOR * 1  # smaller means bigger nudge
 
         self.width = self.screen.width
         self.height = self.screen.height
