@@ -27,7 +27,7 @@ class GameOfLive(Module):
         super(GameOfLive, self).__init__(screen)
         self.gamepad = gamepad
 
-        self.LOAD_FACTOR = 3  # smaller means more crowded
+        self.LOAD_FACTOR = 9  # smaller means more crowded
         self.NUDGING = self.LOAD_FACTOR * 2  # smaller means bigger nudge
 
         self.width = self.screen.width
@@ -111,10 +111,10 @@ class GameOfLive(Module):
             self.next_step += self.interval
             self.board = self.next_board(self.die)
 
-            # If the pattern is stuck in a loop, give it a nudge:
-            if self.detector.is_bored_of(self.board):
-                self.colors = self.new_colors()
-                self.board.update(self.random_board(self.NUDGING))
+        # If the pattern is stuck in a loop, give it a nudge:
+        if self.detector.is_bored_of(self.board):
+            self.colors = self.new_colors()
+            self.board.update(self.random_board(self.NUDGING))
 
         self.draw()
         time.sleep(.001)
@@ -124,7 +124,7 @@ class BoredomDetector(object):
     """Detector of when the simulation gets stuck in a loop"""
 
     # Get bored after (at minimum) this many repititions of a pattern:
-    REPITITIONS = 8
+    REPITITIONS = 14
 
     # We can detect cyclical patterns of up to this many iterations:
     PATTERN_LEN = 4
