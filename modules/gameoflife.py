@@ -1,6 +1,5 @@
 import time
-import math
-from random import randint, choice
+from random import randint
 from itertools import chain
 
 from helpers import *
@@ -47,7 +46,8 @@ class GameOfLive(Module):
             for _ in xrange(int(self.width * self.height / factor))
         )
 
-    def new_colors(self):
+    @staticmethod
+    def new_colors():
         c1 = random_color()
         c2 = darken_color(c1, 1.3)
         c3 = darken_color(c2, 2)
