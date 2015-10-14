@@ -1,6 +1,9 @@
+blessings==1.6
 Jinja2==2.8
 MarkupSafe==0.23
 numpy==1.10.0.post2
+Pillow==3.0.0
+pyalsaaudio==0.8.2
 PyAudio==0.2.8
 pygame==1.9.2a0
 pyserial==2.7
