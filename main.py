@@ -7,7 +7,10 @@ from helpers import *
 
 
 if __name__ == '__main__':
-    ScrollMessage(create_screen(), text="Hello, World!", color=Color(255, 0, 0))
+    ScrollMessage(create_screen(),
+                  text="Hello, World!  :)",
+                  color=Color(255, 0, 0),
+                  scroll="down-left")
     try:
         while True:
             pygame.time.wait(10)

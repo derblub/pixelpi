@@ -40,7 +40,7 @@ class ScrollMessage(Module):
         self.pixel_array = self.img()
         self.buffer = []
 
-        self.interval = 0.15
+        self.interval = 0.04
         self.next_step = time.clock() + self.interval
 
         self.start()
@@ -61,7 +61,7 @@ class ScrollMessage(Module):
         # (we start scrolling off-screen)
         pixel_array_padded = np.pad(
             pixel_array,
-            ((self.width, self.width), (0, 0)),
+            ((self.width, self.width), (self.y_offset, self.y_offset)),
             mode='constant'
         )
 
@@ -75,21 +75,35 @@ class ScrollMessage(Module):
         trimmed.paste(im, (0, 0))
         return trimmed
 
+    def move_left(self):
+        p = self.pixel_array
+        self.pixel_array = np.roll(p, -1, axis=0)
+
+    def move_right(self):
+        p = self.pixel_array
+        self.pixel_array = np.roll(p, 1, axis=0)
+
+    def move_down(self):
+        p = self.pixel_array
+        self.pixel_array = np.roll(p, 1, axis=1)
+
+    def move_up(self):
+        p = self.pixel_array
+        self.pixel_array = np.roll(p, -1, axis=1)
+
     def draw(self):
         p = self.pixel_array
         (w, h) = p.shape
-
-        p = np.roll(p, 0, axis=0)
 
         self.screen.clear()
         for x in range(w):
             for y in range(h):
                 if y < self.screen.height and x < self.screen.width:
-                    y_o = y + self.y_offset  # y with offset
+                    # y_o = y + self.y_offset  # y with offset
                     try:
-                        self.screen.pixel[x][y_o] = int(p[x][y])
+                        self.screen.pixel[x][y] = int(p[x][y])
                     except:
-                        self.screen.pixel[x][y_o] = 0
+                        self.screen.pixel[x][y] = 0
 
         self.screen.update()
 
@@ -97,10 +111,31 @@ class ScrollMessage(Module):
 
         if time.clock() > self.next_step:
             self.next_step += self.interval
+            s = self.scroll
+            if s == "left":
+                self.move_left()
+            elif s == "right":
+                self.move_right()
+            elif s == "up":
+                self.move_up()
+            elif s == "down":
+                self.move_down()
+            elif s == "up-left":
+                self.move_up()
+                self.move_left()
+            elif s == "up-right":
+                self.move_up()
+                self.move_right()
+            elif s == "down-left":
+                self.move_down()
+                self.move_left()
+            elif s == "down-left":
+                self.move_down()
+                self.move_right()
 
         self.draw()
         time.sleep(.001)
 
     def on_start(self):
         print('\033[38;5;39mscrolling \033[38;5;208m"\033[38;5;112m' + self.text + '\033[38;5;208m"\033[0m')
-        print "shape: ", np.array(self.pixel_array).shape
+        # print "shape: ", np.array(self.pixel_array).shape
