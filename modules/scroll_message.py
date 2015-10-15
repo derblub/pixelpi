@@ -1,65 +1,106 @@
 import time
+import pygame
+import numpy as np
 
-from fonts.font import Proportional, DEFAULT_FONT
+from PIL import Image, ImageDraw, ImageFont
 
+from helpers import *
 from module import Module
 from settings import *
 S = Settings()
 
 
 class ScrollMessage(Module):
-    def __init__(self, screen, text):
+
+    FONTDIR = 'pilfonts/'
+    DEFAULT_FONT = 'timB08'
+    DEFALT_SCROLL = 'left'
+    DEFALT_TEXT = 'Hello, World!'
+    DEFAULT_COLOR = Color(255, 255, 255)
+
+    def __init__(self, screen,
+                 text=DEFALT_TEXT,
+                 color=DEFAULT_COLOR,
+                 font=DEFAULT_FONT,
+                 scroll=DEFALT_SCROLL,
+                 y_offset=4):
         super(ScrollMessage, self).__init__(screen)
 
-        self.text = text
+        self.d = []
         self.width = self.screen.width
         self.height = self.screen.height
 
-        self.font = Proportional(DEFAULT_FONT).font
+        self.text = text
+        self.color = color
+        self.font = self.FONTDIR + font + '.pil'
+        self.scroll = scroll
+        self.y_offset = y_offset
 
-        self.scroll_once()
+        # convert text to pixel-array
+        self.pixel_array = self.img()
+        self.buffer = []
 
-        self.pixel_array = []
+        self.interval = 0.15
+        self.next_step = time.clock() + self.interval
 
         self.start()
 
-    def scroll_once(self, direction='left'):
-        length = len(self.text)
-        start_range = []
-        if direction == 'left':
-            start_range = range(length)
-        elif direction == 'right':
-            start_range = range(length - 1, -1, -1)
+    def img(self):
+        # blank image with enough space to fith text
+        im = Image.new("RGBA", (1600, 50), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(im)
+        font = ImageFont.load(self.font)
 
-        for start_char in start_range:
-            for stage in range(8):
-                for col in range(8):
-                    column_data = []
+        draw.text((0, 0), self.text, fill=self.color, font=font)
+        trimmed = self.trim_image(im)
 
-                    if direction == 'left':
-                        this_char = self.font[ord(self.text[start_char - 1])]
-                        next_char = self.font[ord(self.text[start_char])]
-                        if col + stage < 8:
-                            column_data += [col + 1, this_char[col + stage]]
-                        else:
-                            column_data += [col + 1, next_char[col + stage - 8]]
-                    elif direction == 'right':
-                        this_char = self.font[ord(self.text[start_char])]
-                        next_char = self.font[ord(self.text[start_char - 1])]
-                        if col >= stage:
-                            column_data += [col + 1, this_char[col - stage]]
-                        else:
-                            column_data += [col + 1, next_char[col - stage + 8]]
+        pixels = pygame.image.frombuffer(trimmed.tobytes(), trimmed.size, trimmed.mode)
+        pixel_array = np.array(pygame.PixelArray(pixels))
 
-                    print column_data
+        # add width of one screen to padding before and after text
+        # (we start scrolling off-screen)
+        pixel_array_padded = np.pad(
+            pixel_array,
+            ((self.width, self.width), (0, 0)),
+            mode='constant'
+        )
 
-    def tick(self):
+        return pixel_array_padded
+
+    @staticmethod
+    def trim_image(im):
+        bbox = im.getbbox()
+        im = im.crop(bbox)
+        trimmed = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        trimmed.paste(im, (0, 0))
+        return trimmed
+
+    def draw(self):
+        p = self.pixel_array
+        (w, h) = p.shape
+
+        p = np.roll(p, 0, axis=0)
+
         self.screen.clear()
-
-        # self.screen.pixel = [[self.pixel_array[x, y + 16] for y in range(16)] for x in range(16)]
+        for x in range(w):
+            for y in range(h):
+                if y < self.screen.height and x < self.screen.width:
+                    y_o = y + self.y_offset  # y with offset
+                    try:
+                        self.screen.pixel[x][y_o] = int(p[x][y])
+                    except:
+                        self.screen.pixel[x][y_o] = 0
 
         self.screen.update()
+
+    def tick(self):
+
+        if time.clock() > self.next_step:
+            self.next_step += self.interval
+
+        self.draw()
         time.sleep(.001)
 
     def on_start(self):
         print('\033[38;5;39mscrolling \033[38;5;208m"\033[38;5;112m' + self.text + '\033[38;5;208m"\033[0m')
+        print "shape: ", np.array(self.pixel_array).shape

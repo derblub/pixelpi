@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import sys
-import pygame
 
 from screenfactory import create_screen
 from modules.scroll_message import *
+from helpers import *
 
 
 if __name__ == '__main__':
-    ScrollMessage(create_screen(), "Hello World!")
+    ScrollMessage(create_screen(), text="Hello, World!", color=Color(255, 0, 0))
     try:
         while True:
             pygame.time.wait(10)
