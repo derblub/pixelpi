@@ -1,13 +1,17 @@
-import collections
 import libs.image2ansi as image_to_ansi
 import pygame
-import settings as s
+from helpers import *
+from settings import *
 
-Color = collections.namedtuple('Color', 'r g b')
+S = Settings()
+
+instance = None
 
 
 class ConsoleScreen:
-    def __init__(self, width=s.MATRIX_WIDTH, height=s.MATRIX_HEIGHT):
+    def __init__(self,
+                 width=int(S.get('screen', 'matrix_width')),
+                 height=int(S.get('screen', 'matrix_height'))):
         self.width = width
         self.height = height
         self.pixel = [[Color(0, 0, 0) for y in range(height)] for x in range(width)]
@@ -30,7 +34,7 @@ class ConsoleScreen:
         for y in range(self.height):
             current_line = ""
             for x in range(self.width):
-                p = self.pixel[x][y]
+                p = int_to_color(self.pixel[x][y])
                 h = "%2x%2x%2x" % (p.r, p.g, p.b)
                 short, rgb = image_to_ansi.rgb2short(h)
 
@@ -41,3 +45,16 @@ class ConsoleScreen:
             current_line += "\n"
             self.put_cursor(1, y + 2)
             print(current_line)
+
+    def update_brightness(self):
+        pass
+        # b = int(4 + 3.1 * (int(S.get('screen', 'brightness')) + 1) ** 2)
+        # @TODO maybe simulate brightness
+
+    def set_brightness(self, value):
+        value = min(max(value, 0), 8)
+        S.set('screen', 'brightness', value)
+        self.update_brightness()
+
+    def get_brightness(self):
+        return int(S.get('screen', 'brightness'))

@@ -14,8 +14,9 @@ if __name__ == '__main__':
     #               text="Hello, World!  :)",
     #               color=Color(255, 0, 0),
     #               scroll="left")
-    Animation(s, "animations/globe")
-    # Animation(s, "animations/pushingpixels")
+    Animation(s, "animations/globe")  # panned animation
+    # Animation(s, "animations/tron_trailer")  # single image vertical animated
+    # Animation(s, "animations/pushingpixels")  # single image
     try:
         while True:
             pygame.time.wait(10)
