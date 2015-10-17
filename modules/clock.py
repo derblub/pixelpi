@@ -1,6 +1,5 @@
 import time
 import datetime
-import math
 
 from helpers import *
 from module import Module
@@ -41,21 +40,19 @@ class Clock(Module):
         if digit in [22]:
             self.screen.pixel[pos.x + 1][pos.y + 3] = color
 
-    def draw_time(self, hue, colon=True):
+    def draw_time(self):
         now = datetime.datetime.now()
 
+        hue = (time.clock() * 0.01) % 1
+        hue2 = (time.clock() * 0.01 + .75) % 1
         digit_color = hsv_to_color(hue, 1, 1)
-        colon_color = hsv_to_color(hue, 0.8, 1)
+        colon_color = hsv_to_color(hue2, 1, 1)
 
         self.draw_digit(now.minute % 10, Point(13, 5), digit_color)
         self.draw_digit(math.floor(now.minute / 10), Point(9, 5), digit_color)
 
-        if colon:
-            self.screen.pixel[7][6] = colon_color
-            self.screen.pixel[7][8] = colon_color
-        else:
-            self.screen.pixel[7][6] = digit_color
-            self.screen.pixel[7][8] = digit_color
+        self.screen.pixel[7][6] = colon_color
+        self.screen.pixel[7][8] = colon_color
 
         self.draw_digit(now.hour % 10, Point(3, 5), digit_color)
         if math.floor(now.hour / 10) == 1:
@@ -63,13 +60,11 @@ class Clock(Module):
         if math.floor(now.hour / 10) == 2:
             self.draw_digit(22, Point(-1, 5), digit_color)
 
-    def draw(self, colon=True):
+    def draw(self):
         self.screen.clear()
-
-        hue = (time.clock() * 0.01) % 1
-
-        self.draw_time(hue, colon)
+        self.draw_time()
         self.screen.update()
 
     def tick(self):
-        self.draw(False)
+        self.draw()
+        time.sleep(.001)
