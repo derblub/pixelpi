@@ -44,5 +44,8 @@ class AbstractGamepad(object):
     def tick(self):
         pass
 
-        def available(self):
-            return True
+    def available(self):
+        return True
+
+    def consume_event(self, event):
+        pass
