@@ -1,6 +1,7 @@
 import time
 
 import pygame.image
+import numpy as np
 
 from module import Module
 from settings import *
@@ -11,10 +12,26 @@ class Animation(Module):
     def __init__(self, screen, folder, interval=None, autoplay=True):
         super(Animation, self).__init__(screen)
 
+        self.panoff = False
+        self.moveY = 0
+        self.moveX = 0
+        self.moveLoop = False
         if not folder.endswith('/'):
             folder += '/'
         self.folder = folder
         self.screen = screen
+
+        if interval is None:
+            try:
+                self.interval = self.config.getint('animation', 'hold')
+            except:
+                # print('No interval info found.')
+                self.interval = int(S.get('animations', 'hold'))
+        else:
+            self.interval = interval
+
+        self.config = self.load_config(self.folder)
+        self.init_defaults()
 
         try:
             if self.is_single_file():
@@ -31,15 +48,6 @@ class Animation(Module):
             raise
 
         self.screen.update()
-
-        if interval is None:
-            try:
-                self.interval = self.load_interval()
-            except:
-                # print('No interval info found.')
-                self.interval = int(S.get('animations', 'hold'))
-        else:
-            self.interval = interval
 
         self.pos = 0
         if autoplay:
@@ -74,10 +82,35 @@ class Animation(Module):
             frame = [[pixel_array[x, y + 16 * index] for y in range(16)] for x in range(16)]
             self.frames.append(frame)
 
-    def load_interval(self):
+    @staticmethod
+    def load_config(folder):
         cfg = ConfigParser.ConfigParser()
-        cfg.read(self.folder + 'config.ini')
-        return cfg.getint('animation', 'hold')
+        cfg.read(folder + 'config.ini')
+        return cfg
+
+    def init_defaults(self):
+        # movement loop
+        try:
+            self.moveLoop = self.config.getboolean('translate', 'loop')
+        except:
+            pass
+
+        # move animation accross screen this many pixel per frame, + or -)
+        try:
+            self.moveX = self.config.getint('translate', 'movex')
+        except:
+            pass
+
+        try:
+            self.moveY = self.config.getint('translate', 'movey')
+        except:
+            pass
+
+        # beginn/end movement off screen
+        try:
+            self.panoff = self.config.getboolean('translate', 'panoff')
+        except:
+            pass
 
     def tick(self):
         self.pos += 1
