@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 import time
-
-import pygame.image
 import numpy as np
 
+from PIL import Image
 from module import Module
 from settings import *
 S = Settings()
@@ -17,21 +17,21 @@ class Animation(Module):
         self.moveY = 0
         self.moveX = 0
         self.moveLoop = False
-        if not folder.endswith('/'):
-            folder += '/'
-        self.folder = folder
+        self.folder = folder if folder.endswith('/') else folder + '/'
         self.screen = screen
 
-        self.width = 0
-        self.height = 0
+        self.w = 0
+        self.h = 0
 
-        self.pos = 0
+        self.offset_x = 0
+        self.offset_y = 0
+
+        self.current_file = 0
 
         if interval is None:
             try:
                 self.interval = self.config.getint('animation', 'hold')
             except:
-                # print('No interval info found.')
                 self.interval = int(S.get('animations', 'hold'))
         else:
             self.interval = interval
@@ -40,10 +40,7 @@ class Animation(Module):
         self.init_defaults()
 
         try:
-            self.load_frames()
-            print "width: ", self.width
-            print "height: ", self.height
-            print "images: ", len(self.frames)
+            self.load_images()
 
             if len(self.frames) == 0:
                 raise Exception('No frames found in animation ' + self.folder)
@@ -58,30 +55,27 @@ class Animation(Module):
         if autoplay:
             self.start()
 
-    def load_frames(self):
-        self.frames = []
-        frame = []
+    def load_images(self):
         i = 0
         while os.path.isfile(self.folder + str(i) + '.bmp'):
             try:
-                bmp = pygame.image.load(self.folder + str(i) + '.bmp')
+                bmp = Image.open(self.folder + str(i) + '.bmp', 'r')
             except Exception:
                 print('Error loading ' + str(i) + '.bmp from ' + self.folder)
                 raise
-            pixel_array = pygame.PixelArray(bmp)
-            (w, h) = pixel_array.shape
+            pixels = np.fliplr(np.rot90(np.asarray(bmp), 3))
+            self.w, self.h = bmp.size
 
-            frame = [[pixel_array[x, y] for y in range(h)] for x in range(w)]
-            self.frames.append(frame)
-
+            self.frames.append(pixels)
             i += 1
 
-        shape = np.array(frame).shape
-        self.width = shape[0]
-        self.height = shape[1]
+    @staticmethod
+    def is_single_file(folder):
+        return os.path.isfile(folder + '0.bmp') and not os.path.isfile(folder + '1.bmp')
 
-    def is_single_file(self):
-        return os.path.isfile(self.folder + '0.bmp') and not os.path.isfile(self.folder + '1.bmp')
+    @staticmethod
+    def config_exists(folder):
+        return os.path.isfile(folder + 'config.ini')
 
     @staticmethod
     def load_config(folder):
@@ -113,36 +107,87 @@ class Animation(Module):
         except:
             pass
 
-    @staticmethod
-    def do_x_movement(array, move_x):
-        return np.roll(array, move_x, axis=0)
+    def shift_frame(self, frame):
+        frame = np.array(frame, subok=True)
+        ox = self.offset_x
+        oy = self.offset_y
 
-    @staticmethod
-    def do_y_movement(array, move_y):
-        return np.roll(array, move_y, axis=1)
+        # setup frame for x/y translation, if needed and not paused
+        if self.running:
+            if self.moveX > 0:
+                ox = self.w * -1 if self.panoff else self.w * -1 + self.screen.width
+            elif self.moveX < 0:
+                ox = self.screen.width if self.panoff else 0
 
-    def shift_frames(self):
+            if self.moveY > 0:
+                oy = self.screen.height * -1 if self.panoff else 0
+            elif self.moveY < 0:
+                oy = self.h if self.panoff else self.h - self.screen.height
+        else:
+            # center frame if paused/stopped
+            ox = self.w / -2 + 8
+            oy = self.h / -2 - 8
+
+        if self.is_single_file(self.folder):
+            if self.moveX == 0 and self.moveY == 0:
+                # stop animation
+                self.stop()
+
+        # do x/y translations
+        if self.panoff:
+            if ox > self.screen.width or ox < self.w * -1 or oy > self.h or oy < self.screen.height * -1:
+                if self.moveLoop:
+                    if self.moveX > 0 and ox >= self.screen.width:
+                        ox = self.w * -1
+                    elif self.moveX < 0 and ox <= self.w * -1:
+                        ox = self.screen.width
+                    if self.moveY > 0 and oy >= self.h:
+                        oy = self.screen.height * -1
+                    elif self.moveY < 0 and oy <= self.screen.height * -1:
+                        oy = self.h
+        else:
+            if ox > 0 or ox < (self.w * -1 + self.screen.width) or oy > self.h - self.screen.height or oy < 0:
+                if self.moveLoop:
+                    if self.moveX > 0 and ox >= 0:
+                        ox = self.w * -1 + self.screen.width
+                    elif self.moveX < 0 and ox <= self.w - self.screen.width:
+                        ox = 0
+                    if self.moveY > 0 and oy >= self.h - self.screen.height:
+                        oy = 0
+                    elif self.moveY < 0 and oy <= 0:
+                        oy = self.h - self.screen.height
+
         if self.moveX != 0:
-            self.frames[self.pos] = np.roll(self.frames[self.pos], self.moveX * self.pos, axis=0)
-
+            ox += self.moveX
         if self.moveY != 0:
-            self.frames[self.pos] = np.roll(self.frames[self.pos], self.moveY * self.pos, axis=1)
+            oy += self.moveY
+
+        frame = np.roll(frame, ox, axis=0)  # x translations
+        frame = np.roll(frame, oy, axis=1)  # y translations
+
+        self.offset_x = ox
+        self.offset_y = oy
+
+        return frame
 
     def tick(self):
-        if self.pos >= len(self.frames):
-            self.pos = 0
-            # @TODO need to get rid of this.
-            # @TODO frame count is not defined by image-height/16 or number of bmps alone anymore!
+        # for animations with multiple images
+        if self.current_file >= len(self.frames):
+            self.current_file = 0
 
-        # self.shift_frames()
+        # parse config and do frame transformations
+        # shifted_f = self.shift_frame(self.frames[self.current_file])
+        shifted_f = self.frames[self.current_file]
 
-        self.screen.pixel = self.frames[self.pos]
+        self.screen.pixel = shifted_f
         self.screen.update()
-        self.pos += 1
+
+        self.current_file += 1
         time.sleep(self.interval / 1000.0)
 
     def on_start(self):
-        print('\033[38;5;39mplaying \033[38;5;82m' + self.folder + '\033[0m')
+        print '\033[38;5;39mplaying \033[38;5;82m' + self.folder + '\033[0m'
+        print u'\033[38;5;39m╰─ \033[0mwidth:', self.w, " height:", self.h, " images:", len(self.frames)
 
     def play_once(self):
         for frame in self.frames:
