@@ -1,8 +1,9 @@
-import os
+import os, platform
 import pygame.image
 
 from helpers import *
-if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+# if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
     import screen.screen
 else:
     import screen.virtualscreen
@@ -160,7 +161,7 @@ def create_menu_items():
         MusicItem()
     ]
 
-    if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+    if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         if screen.screen.instance is not None:
             menu_items.append(BrightnessItem(screen.screen.instance))
     else:

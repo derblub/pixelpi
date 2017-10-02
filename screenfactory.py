@@ -1,8 +1,8 @@
-import os
+import os, platform
 
 
 def create_screen():
-    if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
+    if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         from screen.screen import Screen
         return Screen()
     else:
