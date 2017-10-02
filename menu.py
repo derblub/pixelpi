@@ -7,6 +7,7 @@ import pygame
 from menu.menuitems import create_menu_items
 from screenfactory import create_screen
 from gamepadfactory import create_gamepad
+from server import interface
 from helpers import *
 
 S = Settings()
@@ -45,6 +46,11 @@ class Menu(object):
 
         if self.start_screen != -1 or not self.gamepad.available():
             self.launch()
+
+        self.webinterface = S.get('webinterface', 'enabled')
+        if self.webinterface:
+            interface.start_server()
+
 
     def reset(self, redraw=True):
         self.dir = 0
