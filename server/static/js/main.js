@@ -5,4 +5,19 @@ $(document).ready(function(){
         console.log(value);
         $this.parent('td').css('background-color', value);
     });
+
+
+   var ws = new WebSocket('ws://127.0.0.1:9010');
+    ws.onopen = function(){
+        console.log('Connected to ws://127.0.0.1:9010');
+    };
+    ws.addEventListener("message", function(event) {
+        console.log('Received: ' + event.data);
+    });
+
+    sendMessage = function(text){
+        console.log('Sent: ' + text);
+        ws.send(text);
+    }
+
 });

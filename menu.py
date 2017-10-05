@@ -51,7 +51,6 @@ class Menu(object):
         if self.webinterface:
             interface.start_server()
 
-
     def reset(self, redraw=True):
         self.dir = 0
         self.offset = 0
