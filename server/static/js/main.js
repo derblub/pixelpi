@@ -12,7 +12,7 @@ $(document).ready(function(){
         console.log('Connected to ws://127.0.0.1:9010');
     };
     ws.addEventListener("message", function(event) {
-        console.log('Received: ' + event.data);
+        console.log('Received: ', JSON.parse(event.data));
     });
 
     sendMessage = function(text){
