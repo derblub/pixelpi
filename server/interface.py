@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import web
+import json
 
 from settings import *
 from jinja2 import Environment, FileSystemLoader
 from websocket_server import WebsocketServer
-from multiprocessing import Process
 
 
 S = Settings()
@@ -14,17 +14,19 @@ urls = (
 )
 
 
+# http-server ___________________
 class WebInterface(web.application):
+
     def run(self, *middleware):
         func = self.wsgifunc(*middleware)
         server = web.httpserver.runsimple(
             func,
             (S.get('webinterface', 'ip'), int(S.get('webinterface', 'port')))
         )
+        print('\033[38;5;85mstarting http server\033[0m')
         return server
 
 
-# VIEWS ___________________
 class index:
     def GET(self):
         c = {
@@ -41,50 +43,6 @@ class settings:
         return render_template('settings.html', c)
 
 
-# websocket
-# Called for every client connecting (after handshake)
-def ws_new_client(client, server):
-    print("New client connected and was given id %d" % client['id'])
-    server.send_message_to_all("Hey all, a new client has joined us")
-
-
-# Called for every client disconnecting
-def ws_client_left(client, server):
-    print("Client(%d) disconnected" % client['id'])
-
-
-# Called when a client sends a message
-def ws_message_received(client, server, message):
-    if len(message) > 200:
-        message = message[:200]+'..'
-    print("Client(%d) said: %s" % (client['id'], message))
-
-
-# _______________________
-def start_webpy():
-    print('\033[38;5;85mstarting web server\033[0m')
-    app = WebInterface(urls, globals())
-    app.run()
-
-
-def start_ws():
-    print('\033[38;5;75mstarting websocket server\033[0m')
-    ws = WebsocketServer(9010)  # port
-    ws.set_fn_new_client(ws_new_client)
-    ws.set_fn_client_left(ws_client_left)
-    ws.set_fn_message_received(ws_message_received)
-    ws.run_forever()
-
-
-def start_server():
-    web_server = Process(target=start_webpy)
-    web_server.start()
-    socket_server = Process(target=start_ws)
-    socket_server.start()
-    web_server.join()
-    socket_server.join()
-
-
 def render_template(template_name, context):
     extensions = context.pop('extensions', [])
     globals = context.pop('globals', {})
@@ -96,3 +54,45 @@ def render_template(template_name, context):
     jinja_env.globals.update(globals)
 
     return jinja_env.get_template(template_name).render(context)
+
+
+# ws-server ___________________
+class SocketInterface:
+
+    def __init__(self, screen):
+        self.screen = screen
+        self.register_server()
+
+    def register_server(self):
+        self.server = WebsocketServer(9010, host=S.get('webinterface', 'ip'))
+        self.server.set_fn_new_client(self.new_client)
+        self.server.set_fn_client_left(self.client_left)
+        self.server.set_fn_message_received(self.message_received)
+
+    def run(self):
+        if self.server:
+            self.server.run_forever()
+            print('\033[38;5;75mstarting websocket server\033[0m')
+            return self.server
+
+    def tick(self):
+        c = {
+            'pixel': self.screen.pixel
+        }
+        self.server.send_message_to_all(json.dumps(c))
+
+    # Called for every client connecting (after handshake)
+    def new_client(self, client, server):
+        print("New client connected and was given id %d" % client['id'])
+        self.server.send_message_to_all("Hey all, a new client has joined us")
+
+    # Called for every client disconnecting
+    def client_left(self, client, server):
+        print("Client(%d) disconnected" % client['id'])
+
+    # Called when a client sends a message
+    def message_received(self, client, server, message):
+        if len(message) > 200:
+            message = message[:200] + '..'
+        print("Client(%d) said: %s" % (client['id'], message))
+

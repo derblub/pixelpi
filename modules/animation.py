@@ -66,7 +66,7 @@ class Animation(Module):
             pixels = np.fliplr(np.rot90(np.asarray(bmp), 3))
             self.w, self.h = bmp.size
 
-            self.frames.append(pixels)
+            self.frames.append(pixels.tolist())
             i += 1
 
     @staticmethod

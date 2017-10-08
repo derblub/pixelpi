@@ -1,6 +1,7 @@
 import sys
 import time
 import math
+import thread
 
 import pygame
 
@@ -49,7 +50,13 @@ class Menu(object):
 
         self.webinterface = S.get('webinterface', 'enabled')
         if self.webinterface:
-            interface.start_server()
+
+            from server.interface import index, settings
+            self.http_server = interface.WebInterface(interface.urls, locals())
+            thread.start_new_thread(self.http_server.run, (), {})
+
+            self.socket_server = interface.SocketInterface(self.screen)
+            thread.start_new_thread(self.socket_server.run, (), {})
 
     def reset(self, redraw=True):
         self.dir = 0
@@ -109,6 +116,10 @@ class Menu(object):
 
     def tick(self):
         self.gamepad.tick()
+
+        if self.socket_server:
+            self.socket_server.tick()
+
         if self.dir != 0:
             self.offset = self.dir * self.ease((1 - (time.clock() - self.start) / (self.end - self.start)))
 
@@ -186,16 +197,19 @@ class Menu(object):
 
 if __name__ == '__main__':
     menu = Menu(create_screen(), create_menu_items())
-    try:
-        while True:
-            menu.tick()
-            pygame.time.wait(10)
-    except KeyboardInterrupt:
-        try:
-            sys.stdout.close()
-        except:
-            pass
-        try:
-            sys.stderr.close()
-        except:
-            pass
+    while True:
+        menu.tick()
+        time.sleep(0.01)
+    # try:
+    #     while True:
+    #         menu.tick()
+    #         pygame.time.wait(10)
+    # except KeyboardInterrupt:
+    #     try:
+    #         sys.stdout.close()
+    #     except:
+    #         pass
+    #     try:
+    #         sys.stderr.close()
+    #     except:
+    #         pass
