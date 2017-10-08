@@ -199,7 +199,8 @@ if __name__ == '__main__':
     menu = Menu(create_screen(), create_menu_items())
     while True:
         menu.tick()
-        time.sleep(0.01)
+        # time.sleep(0.01)
+        time.sleep(0.1)
     # try:
     #     while True:
     #         menu.tick()
