@@ -26,7 +26,7 @@ Point = collections.namedtuple('Point', 'x y')
 
 def hsv_to_color(hue, saturation, value):
     t = colorsys.hsv_to_rgb(hue, saturation, value)
-    return Color(int(t[0] * 255), int(t[1] * 255), int(t[2] * 255))
+    return RGBColor(int(t[0] * 255), int(t[1] * 255), int(t[2] * 255))
 
 
 def rgb_to_int(c):

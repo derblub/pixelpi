@@ -3,6 +3,7 @@ import web
 import json
 
 from settings import *
+from input import  press, release
 from jinja2 import Environment, FileSystemLoader
 from websocket_server import WebsocketServer
 
@@ -82,16 +83,24 @@ class SocketInterface:
         self.server.send_message_to_all(json.dumps(c))
 
     # Called for every client connecting (after handshake)
+    @staticmethod
     def new_client(self, client, server):
         print("New client connected and was given id %d" % client['id'])
 
     # Called for every client disconnecting
+    @staticmethod
     def client_left(self, client, server):
         print("Client(%d) disconnected" % client['id'])
 
     # Called when a client sends a message
+    @staticmethod
     def message_received(self, client, server, message):
-        if len(message) > 200:
-            message = message[:200] + '..'
-        print("Client(%d) said: %s" % (client['id'], message))
+        # print("Client(%d) said: %s" % (client['id'], message))
+        data = json.loads(message)
+
+        if data['key']:
+            press(data['key'])
+            release(data['key'])
+
+        print(data)
 

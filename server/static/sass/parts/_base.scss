@@ -29,3 +29,18 @@ table.screen {
     }
   }
 }
+
+
+.button { fill: #dddddd; }
+.button:active { fill: gray; }
+.fullscreen { fill: rgb(60,60,60); }
+.home {
+    fill: black;
+    font-size: 0.8px;
+    font-family: sans-serif;
+    cursor: default;
+    user-select: none;
+}
+svg#controller {
+    width: 100%;
+}

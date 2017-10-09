@@ -7,9 +7,10 @@ import pygame
 
 from menu.menuitems import create_menu_items
 from screenfactory import create_screen
-from gamepadfactory import create_gamepad
 from server import interface
 from helpers import *
+import input
+
 
 S = Settings()
 S.load()
@@ -18,8 +19,7 @@ S.load()
 class Menu(object):
     def __init__(self, screen, items):
         self.screen = screen
-        self.gamepad = create_gamepad()
-        self.gamepad.on_press.append(self.on_key_down)
+        input.on_press.append(self.on_key_down)
 
         self.index = 0
         self.MENU_ITEMS_MAP = {
@@ -45,7 +45,7 @@ class Menu(object):
         if self.start_screen is -1:
             self.resume_animation()
 
-        if self.start_screen != -1 or not self.gamepad.available():
+        if self.start_screen != -1 or len(input.available_input_methods) == 0:
             self.launch()
 
         self.webinterface = S.get('webinterface', 'enabled')
@@ -115,7 +115,7 @@ class Menu(object):
         return x
 
     def tick(self):
-        self.gamepad.tick()
+        input.tick()
 
         if self.socket_server:
             self.socket_server.tick()
@@ -139,35 +139,35 @@ class Menu(object):
         self.end = self.start + 0.3
 
     def on_key_down(self, key):
+        self.items[self.index].on_key_press(key, self)
+
         if self.module is not None:
-            if key == self.gamepad.BACK:
+            if key == input.Key.BACK or key == input.Key.BACK:
                 self.stop()
             return
 
-        if key == self.gamepad.RIGHT:
+        if key == input.Key.RIGHT:
             self.move(1)
-        if key == self.gamepad.LEFT:
+        if key == input.Key.LEFT:
             self.move(-1)
-        if key == self.gamepad.START:
+        if key == input.Key.ENTER or key == input.Key.A:
             self.launch()
             return True
-
-        self.items[self.index].on_key_press(key, self)
 
     def stop(self):
         self.module.stop()
         self.screen.fade_out(0.3)
         self.module = None
         self.resume_animation()
-        self.gamepad.on_press = [self.on_key_down]
-        self.gamepad.on_release = []
+        input.on_press = [self.on_key_down]
+        input.on_release = []
 
     def launch(self):
         if not self.items[self.index].is_launchable():
             return
         if self.start_screen is -1:
             self.start_animation()
-        self.module = self.items[self.index].get_module(self.screen, self.gamepad)
+        self.module = self.items[self.index].get_module(self.screen)
         self.module.start()
 
     def start_animation(self):
@@ -201,16 +201,3 @@ if __name__ == '__main__':
         menu.tick()
         # time.sleep(0.01)
         time.sleep(0.1)
-    # try:
-    #     while True:
-    #         menu.tick()
-    #         pygame.time.wait(10)
-    # except KeyboardInterrupt:
-    #     try:
-    #         sys.stdout.close()
-    #     except:
-    #         pass
-    #     try:
-    #         sys.stderr.close()
-    #     except:
-    #         pass

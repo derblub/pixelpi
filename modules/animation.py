@@ -79,8 +79,13 @@ class Animation(Module):
 
     @staticmethod
     def load_config(folder):
-        cfg = ConfigParser.ConfigParser()
-        cfg.read(folder + 'config.ini')
+        try:
+            cfg = ConfigParser.ConfigParser()
+            cfg.read(folder + 'config.ini')
+        except(ConfigParser.MissingSectionHeaderError, ConfigParser.ParsingError):
+            print('Error parsing ' + folder + 'config.ini')
+            cfg = False
+
         return cfg
 
     def init_defaults(self):

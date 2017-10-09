@@ -11,7 +11,7 @@ class Gamepad(AbstractGamepad):
     def __init__(self, verbose=False):
         super(Gamepad, self).__init__(verbose)
 
-        # map between pygame buttons ids and xbox contorl ids
+        # map between pygame buttons ids and xbox control ids
         self.BUTTONCONTROLMAP = {
             0: self.START,  # A
             1: self.BACK,  # B

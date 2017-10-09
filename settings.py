@@ -41,7 +41,7 @@ class Settings:
                 ';clock_every': 'int, [15]',
                 'clock_every': '15',
 
-                ';controller': 'none, xbox, logitech',
+                ';controller': 'gamepad, keyboard, buttons',
                 'controller': 'none',
 
                 ';audio_input': 'serial, [usb_mic]',

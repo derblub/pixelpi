@@ -8,9 +8,9 @@ class AbstractScreen(object):
         self.width = width
         self.height = height
 
-        self.pixel = [[helpers.Color(0, 0, 0) for y in range(height)] for x in range(width)]
+        self.pixel = [[helpers.RGBColor(0, 0, 0) for y in range(height)] for x in range(width)]
 
-    def clear(self, color=helpers.Color(0, 0, 0)):
+    def clear(self, color=helpers.RGBColor(0, 0, 0)):
         self.pixel = [[color for y in range(self.height)] for x in range(self.width)]
         # for x in range(self.width):
         #     for y in range(self.height):
