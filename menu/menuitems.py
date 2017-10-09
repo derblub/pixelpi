@@ -1,14 +1,11 @@
-import os, platform
+import platform
+
 import pygame.image
 
-from helpers import *
-# if os.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
-if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
-    import screen.screen
-else:
-    import screen.virtualscreen
-
 import input
+import screen.screen
+import screen.virtualscreen
+from helpers import *
 
 
 class MenuItem(object):
@@ -47,6 +44,16 @@ class CycleItem(MenuItem):
     def get_module(self, screen):
         from modules.cycle import Cycle
         return Cycle(screen, 'animations')
+
+
+class GalleryItem(MenuItem):
+    def __init__(self):
+        super(GalleryItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/gallery.bmp')
+
+    def get_module(self, screen):
+        from modules.gallery import Gallery
+        return Gallery(screen)
 
 
 class TetrisItem(MenuItem):
@@ -109,6 +116,16 @@ class PieItem(MenuItem):
         return Pie(screen)
 
 
+class FireItem(MenuItem):
+    def __init__(self):
+        super(FireItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/fire.bmp')
+
+    def get_module(self, screen):
+        from modules.fire import Fire
+        return Fire(screen)
+
+
 class BrightnessItem(MenuItem):
     def get_module(self, screen):
         pass
@@ -151,17 +168,29 @@ class MusicItem(MenuItem):
         return Music(screen)
 
 
+class WitnessItem(MenuItem):
+    def __init__(self):
+        super(WitnessItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/witness.bmp')
+
+    def get_module(self, screen):
+        from modules.witness import WitnessGame
+        return WitnessGame(screen)
+
+
 def create_menu_items():
     menu_items = [
         CycleItem(),
+        GalleryItem(),
         TetrisItem(),
         SnakeItem(),
         PacmanItem(),
         GameOfLifeItem(),
         ClockItem(),
         PieItem(),
-        MusicItem()
-    ]
+        MusicItem(),
+        FireItem(),
+        WitnessItem()]
 
     if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         if screen.screen.instance is not None:

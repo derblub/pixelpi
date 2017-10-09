@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from helpers import *
-from module import Module
+from modules import Module
 from settings import *
 S = Settings()
 

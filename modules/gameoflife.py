@@ -2,8 +2,9 @@ import time
 from random import randint
 from itertools import chain
 
+import input
 from helpers import *
-from module import *
+from modules import *
 
 
 """
@@ -23,9 +24,9 @@ def random_color():
 
 
 class GameOfLive(Module):
-    def __init__(self, screen, gamepad):
+    def __init__(self, screen):
         super(GameOfLive, self).__init__(screen)
-        self.gamepad = gamepad
+        input.on_press.append(self.on_key_down)
 
         self.LOAD_FACTOR = 7  # smaller means more crowded
         self.NUDGING = self.LOAD_FACTOR * 1  # smaller means bigger nudge
@@ -119,6 +120,16 @@ class GameOfLive(Module):
 
         self.draw()
         time.sleep(.001)
+
+    def on_key_down(self, key):
+        if key == input.Key.UP:
+            self.board.update(self.random_board(self.NUDGING))
+        if key == input.Key.DOWN:
+            self.board.update(self.random_board(self.NUDGING))
+        if key == input.Key.LEFT:
+            self.board = self.next_board(self.die)
+        if key == input.Key.RIGHT:
+            self.board = self.next_board(self.die)
 
 
 class BoredomDetector(object):

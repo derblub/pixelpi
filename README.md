@@ -3,7 +3,7 @@ Games and Animations on 16x16 LEDs
 
 ![16x16 LED matrix](https://i.imgur.com/jsguEYEl.jpg)
 
-This is a collection of python scripts that run animations and 
+This is a collection of python scripts that run animations and
 games on a 16x16 matrix of WS2812B LEDs (aka Neopixel, if from Adafruit).
 The project is inspired by and compatible to Jeremy Williams' [Game Frame](http://ledseq.com).
 
@@ -23,6 +23,13 @@ Make sure you install [rpi_ws281x](https://github.com/jgarff/rpi_ws281x.git) as 
 ...
 ```
 
+If you have a different setup, you can edit the `Screen.py` file to translate the 16x16 matrix on your LED strip.
+
+## Software
+
+To set up the software, clone this repository on your Raspberry Pi. Rename the file `config.ini.example` to `config.ini`.
+Make sure, the neopixel library is installed.
+This project uses Python 2.7.
 
 ### Animations
 Place your animations in a folder called `animations` in the repository. For each animation, a file `/animations/animation_name/0.bmp` should exist.

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+
 import time
 import numpy as np
 
 from PIL import Image
-from module import Module
+from helpers import *
+from modules import Module
 from settings import *
+
 S = Settings()
 
 

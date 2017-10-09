@@ -1,49 +1,9 @@
 import random
 import thread
-import math
 
+import input
 from modules.animation import *
-from helpers import *
-
-
-class Particle:
-    def __init__(self, x, y, color):
-        self.x = x
-        self.y = y
-        self.vy = 0
-        self.color = color
-
-    def step(self, dt):
-        self.y += dt * self.vy
-        self.vy += dt * 250
-
-
-class Tetromino:
-    def __init__(self, blocks, color):
-        self.color = color
-
-        self.width = 0
-        self.height = 0
-        for block in blocks:
-            self.width = max(self.width, block.x + 1)
-            self.height = max(self.height, block.y + 1)
-
-        self.map = [[False for y in range(self.height)] for x in range(self.width)]
-        for block in blocks:
-            self.map[block.x][block.y] = True
-
-    def rotate(self, amount=1):
-        if amount < 1:
-            return self
-        if amount > 1:
-            return self.rotate(amount - 1).rotate()
-
-        blocks = []
-        for x in range(self.width):
-            for y in range(self.height):
-                if self.map[x][y]:
-                    blocks.append(Point(self.height - y - 1, x))
-        return Tetromino(blocks, self.color)
+from particle import *
 
 
 class Tetris(Module):
@@ -59,9 +19,8 @@ class Tetris(Module):
 
     COOLDOWN = 0.03
 
-    def __init__(self, screen, gamepad):
+    def __init__(self, screen):
         super(Tetris, self).__init__(screen)
-        self.gamepad = gamepad
 
         self.level_width = 10
         self.level_height = 16
@@ -69,7 +28,7 @@ class Tetris(Module):
         self.draw_lock = thread.allocate_lock()
         self.game_lock = thread.allocate_lock()
 
-        self.gamepad.on_press.append(self.enqueue_key)
+        input.on_press.append(self.enqueue_key)
         self.lastinput = 0
 
         self.new_game()
@@ -88,7 +47,7 @@ class Tetris(Module):
     def draw_blocks(self):
         for y in range(self.level_height):
             for x in range(self.level_width):
-                if self.level[x][y] is not None:
+                if self.level[x][y] != None:
                     self.screen.pixel[x + (self.screen.width - self.level_width) / 2][
                         y + (self.screen.height - self.level_height) / 2] = self.level[x][y]
                 else:
@@ -101,7 +60,7 @@ class Tetris(Module):
                 if self.current_tetromino.map[x][y]:
                     a = x + (self.screen.width - self.level_width) / 2 + self.tetromino_pos.x
                     b = y + (self.screen.height - self.level_height) / 2 + self.tetromino_pos.y
-                    if b >= 0 and 0 <= a < self.screen.width and b < self.screen.height:
+                    if a >= 0 and b >= 0 and a < self.screen.width and b < self.screen.height:
                         self.screen.pixel[a][b] = self.current_tetromino.color
 
     def draw_ghost(self):
@@ -120,7 +79,7 @@ class Tetris(Module):
         self.screen.clear()
         self.draw_background()
         self.draw_blocks()
-        if self.current_tetromino is not None:
+        if self.current_tetromino != None:
             self.draw_ghost()
             self.draw_tetromino()
 
@@ -148,7 +107,7 @@ class Tetris(Module):
                                             x + position.x < 0
                                 or x + position.x >= self.level_width
                             or y + position.y >= self.level_height
-                        or (y >= 0 and self.level[x + position.x][y + position.y] is not None)):
+                        or (y >= 0 and self.level[x + position.x][y + position.y] != None)):
                     return False
         return True
 
@@ -176,7 +135,7 @@ class Tetris(Module):
             if now > detach_next and line >= 0:
                 detach_next += 0.05
 
-                blocks = [x for x in range(self.level_width) if self.level[x][line] is not None]
+                blocks = [x for x in range(self.level_width) if self.level[x][line] != None]
                 if len(blocks) == 0:
                     line -= 1
                     continue
@@ -197,7 +156,7 @@ class Tetris(Module):
 
             self.screen.update()
 
-        animation = Animation(self.screen, 'tetris/gameover', autoplay=False)
+        animation = Animation(self.screen, 'modules/tetris/gameover', autoplay=False)
         animation.play_once()
 
         self.new_game()
@@ -232,7 +191,7 @@ class Tetris(Module):
 
     def on_key_down(self, button):
         with self.game_lock:
-            if button == 4 or button == self.gamepad.UP:
+            if button == input.Key.Y or button == input.Key.UP or button == input.Key.ENTER:
                 center = Point(self.tetromino_pos.x + self.current_tetromino.width / 2,
                                self.tetromino_pos.y + self.current_tetromino.height / 2)
                 rotated = self.current_tetromino.rotate()
@@ -243,14 +202,15 @@ class Tetris(Module):
                     self.lastinput = time.clock()
                     self.draw_and_update()
 
-            if button == 2:
+            if button == input.Key.A:
                 while self.fits(self.current_tetromino, Point(self.tetromino_pos.x, self.tetromino_pos.y + 1)):
                     self.tetromino_pos = Point(self.tetromino_pos.x, self.tetromino_pos.y + 1)
                 self.step()
                 self.draw_and_update()
 
-            self.check_keys(keydown=True)
-        if button == 10:
+            self.check_keys(keydown=True, override_left=button == input.Key.LEFT,
+                            override_right=button == input.Key.RIGHT, override_down=button == input.Key.DOWN)
+        if button == input.Key.SELECT:
             self.new_game()
 
     def get_full_lines(self):
@@ -258,7 +218,7 @@ class Tetris(Module):
         for y in range(self.level_height):
             empty = False
             for x in range(self.level_width):
-                if self.level[x][y] is None:
+                if self.level[x][y] == None:
                     empty = True
             if not empty:
                 result.append(y)
@@ -292,22 +252,22 @@ class Tetris(Module):
 
         self.next_step = time.clock()
 
-    def check_keys(self, keydown=False):
-        if self.gamepad.button[self.gamepad.LEFT] and time.clock() - self.lastinput > self.COOLDOWN:
+    def check_keys(self, keydown=False, override_left=False, override_right=False, override_down=False):
+        if (input.key_state[input.Key.LEFT] or override_left) and time.clock() - self.lastinput > self.COOLDOWN:
             if self.fits(self.current_tetromino, Point(self.tetromino_pos.x - 1, self.tetromino_pos.y)):
                 self.tetromino_pos = Point(self.tetromino_pos.x - 1, self.tetromino_pos.y)
                 self.lastinput = time.clock()
                 if keydown:
                     self.lastinput += self.COOLDOWN * 1.5
                 self.draw_and_update()
-        if self.gamepad.button[self.gamepad.RIGHT] and time.clock() - self.lastinput > self.COOLDOWN:
+        if (input.key_state[input.Key.RIGHT] or override_right) and time.clock() - self.lastinput > self.COOLDOWN:
             if self.fits(self.current_tetromino, Point(self.tetromino_pos.x + 1, self.tetromino_pos.y)):
                 self.tetromino_pos = Point(self.tetromino_pos.x + 1, self.tetromino_pos.y)
                 self.lastinput = time.clock()
                 if keydown:
                     self.lastinput += self.COOLDOWN * 1.5
                 self.draw_and_update()
-        if self.gamepad.button[self.gamepad.DOWN] and time.clock() - self.lastinput > self.COOLDOWN:
+        if (input.key_state[input.Key.DOWN] or override_down) and time.clock() - self.lastinput > self.COOLDOWN:
             if self.fits(self.current_tetromino, Point(self.tetromino_pos.x, self.tetromino_pos.y + 1)):
                 self.tetromino_pos = Point(self.tetromino_pos.x, self.tetromino_pos.y + 1)
                 self.lastinput = time.clock()

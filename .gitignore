@@ -6,3 +6,4 @@ neopixel.py
 settings.ini
 node_modules
 venv/
+gallery/

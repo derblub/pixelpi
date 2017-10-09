@@ -1,20 +1,19 @@
 import random
 from thread import start_new_thread
 
-from modules.clock import Clock
+import input
 from animation import *
+from modules.clock import Clock
 from settings import *
 
 S = Settings()
 
 
 class Cycle(Module):
-    def __init__(self, screen, gamepad, location, interval=int(S.get('animations', 'show'))):
+    def __init__(self, screen, location, interval=int(S.get('animations', 'show'))):
         super(Cycle, self).__init__(screen)
 
-        self.gamepad = gamepad
-        if gamepad is not None:
-            self.gamepad.on_press.append(self.key_press)
+        input.on_press.append(self.key_press)
         self.paused = False
 
         self.subfolders = self.load_subfolders(location)
@@ -95,19 +94,19 @@ class Cycle(Module):
             self.get_current_animation().stop()
 
     def key_press(self, key):
-        if key == self.gamepad.RIGHT:
+        if key == input.Key.RIGHT:
             self.next(pick_random=False)
-        if key == self.gamepad.LEFT:
+        if key == input.Key.LEFT:
             if self.history_position > 0:
                 self.get_current_animation().stop()
                 self.history_position -= 1
                 self.get_current_animation().start()
-        if key == self.gamepad.START:
+        if key == input.Key.A or key == input.Key.ENTER:
             self.paused = not self.paused
             if not self.paused:
                 self.next_animation = time.time() + self.interval
-                self.next(pick_random=False)
             self.get_current_animation().stop()
-            icon = Animation(self.screen, "icons/pause" if self.paused else "icons/play", interval=800, autoplay=False)
+            icon = Animation(self.screen, "icons/pause" if self.paused else "icons/play", interval=800,
+                             autoplay=False)
             icon.play_once()
             self.get_current_animation().start()

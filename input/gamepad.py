@@ -1,8 +1,8 @@
 # From http://nessy.info/?p=62, modified
 
-from input import *
-import time
 from thread import start_new_thread
+
+from input import *
 
 
 def _process_byte(byte, button):

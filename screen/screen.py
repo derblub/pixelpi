@@ -52,5 +52,6 @@ class Screen(AbstractScreen):
         S.set('screen', 'brightness', value)
         self.update_brightness()
 
+    @staticmethod
     def get_brightness(self):
         return int(S.get('screen', 'brightness'))

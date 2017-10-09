@@ -8,9 +8,10 @@ from thread import start_new_thread
 import numpy
 
 from helpers import *
-from modules.module import Module
+from modules import Module
+import serial
+from thread import start_new_thread
 from settings import *
-
 S = Settings()
 
 

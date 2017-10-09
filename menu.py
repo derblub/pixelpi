@@ -1,16 +1,14 @@
-import sys
 import time
-import math
 import thread
-
 import pygame
+import input
 
 from menu.menuitems import create_menu_items
 from screenfactory import create_screen
 from server import interface
 from helpers import *
-import input
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 S = Settings()
 S.load()
@@ -45,12 +43,14 @@ class Menu(object):
         if self.start_screen is -1:
             self.resume_animation()
 
+        print("input.available_input_methods")
+        print input.available_input_methods
+
         if self.start_screen != -1 or len(input.available_input_methods) == 0:
             self.launch()
 
         self.webinterface = S.get('webinterface', 'enabled')
         if self.webinterface:
-
             from server.interface import index, settings
             self.http_server = interface.WebInterface(interface.urls, locals())
             thread.start_new_thread(self.http_server.run, (), {})
@@ -130,8 +130,6 @@ class Menu(object):
             self.draw()
 
     def move(self, direction):
-        if self.dir != 0:
-            return
 
         self.index = (self.index + direction + len(self.items)) % len(self.items)
         self.dir = direction
@@ -142,7 +140,7 @@ class Menu(object):
         self.items[self.index].on_key_press(key, self)
 
         if self.module is not None:
-            if key == input.Key.BACK or key == input.Key.BACK:
+            if key == input.Key.HOME or key == input.Key.BACK:
                 self.stop()
             return
 
@@ -165,8 +163,11 @@ class Menu(object):
     def launch(self):
         if not self.items[self.index].is_launchable():
             return
-        if self.start_screen is -1:
-            self.start_animation()
+
+        self.offset = 0
+        self.dir = 0
+
+        self.start_animation()
         self.module = self.items[self.index].get_module(self.screen)
         self.module.start()
 

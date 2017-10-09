@@ -1,9 +1,9 @@
 import random
 import time
-import math
 
+import input
 from helpers import *
-from module import *
+from modules import *
 
 
 def random_color():
@@ -14,9 +14,8 @@ def random_color():
 
 
 class Snake(Module):
-    def __init__(self, screen, gamepad):
+    def __init__(self, screen):
         super(Snake, self).__init__(screen)
-        self.gamepad = gamepad
 
         self.snake = [Point(screen.width / 2, screen.height / 2)]
         self.dir = Point(0, -1)
@@ -24,7 +23,7 @@ class Snake(Module):
         self.interval = 0.15
 
         self.new_game()
-        self.gamepad.on_press.append(self.on_key_down)
+        input.on_press.append(self.on_key_down)
 
     def new_game(self):
         self.food_color = random_color()
@@ -97,9 +96,9 @@ class Snake(Module):
     def draw(self):
         self.screen.clear()
 
-        if self.food is not None:
+        if self.food != None:
             t = 0.6
-            if self.last_food is not None and time.clock() - self.pulse_offset < t:
+            if self.last_food != None and time.clock() - self.pulse_offset < t:
                 radius = 18
                 for x in range(self.screen.width):
                     for y in range(self.screen.height):
@@ -112,7 +111,7 @@ class Snake(Module):
             self.screen.pixel[p.x][p.y] = Color(255, 255, 255)
         self.screen.pixel[self.snake[0].x][self.snake[0].y] = self.head_color
 
-        if self.food is not None:
+        if self.food != None:
             self.screen.pixel[self.food.x][self.food.y] = darken_color(self.food_color, math.sin(
                 (time.clock() - self.pulse_offset) * 8) ** 2)
 
@@ -121,7 +120,7 @@ class Snake(Module):
     def tick(self):
         if self.next_step < time.clock():
             self.move()
-            if self.gamepad.button[1]:
+            if input.key_state[input.Key.X]:
                 self.next_step += self.interval / 3
             else:
                 self.next_step += self.interval
@@ -130,16 +129,16 @@ class Snake(Module):
 
     def on_key_down(self, key):
         next = self.dir
-        if key == self.gamepad.UP:
+        if key == input.Key.UP:
             next = Point(0, -1)
-        if key == self.gamepad.DOWN:
+        if key == input.Key.DOWN:
             next = Point(0, 1)
-        if key == self.gamepad.LEFT:
+        if key == input.Key.LEFT:
             next = Point(-1, 0)
-        if key == self.gamepad.RIGHT:
+        if key == input.Key.RIGHT:
             next = Point(1, 0)
 
-        if key == 1:
+        if key == input.Key.X:
             self.next_step = time.clock()
 
         if len(self.snake) == 1 or self.snake[0].x + next.x != self.snake[1].x or self.snake[0].y + next.y != \

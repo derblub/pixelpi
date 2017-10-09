@@ -1,4 +1,5 @@
 import pygame
+
 from input import *
 
 
@@ -28,7 +29,7 @@ keycode_list = [
 
 def _keycode_to_int(keycode):
     for relation in keycode_list:
-        if relation[0] == keycode:
+        if (relation[0] == keycode):
             return relation[1]
     raise UnknownKeyException
 

@@ -1,9 +1,11 @@
 from __future__ import division
+
 import collections
 import colorsys
 import math
 
 from settings import *
+
 S = Settings()
 
 
@@ -30,14 +32,35 @@ def hsv_to_color(hue, saturation, value):
 
 
 def rgb_to_int(c):
-    return Color(c.r, c.g, c.b)
+    return RGBColor(c.r, c.g, c.b)
 
 
-def darken_color(color, factor):
+def darken_color(color, factor):  # 0 is darkest, 1 is no change
     b = color & 255
     g = (color >> 8) & 255
     r = (color >> 16) & 255
-    return Color(int(r * factor), int(g * factor), int(b * factor))
+    return RGBColor(int(r * factor), int(g * factor), int(b * factor))
+
+
+def brighten_color(color, factor):  # 0 is brightest, 1 is no change
+    b = color & 255
+    g = (color >> 8) & 255
+    r = (color >> 16) & 255
+    return RGBColor(int(255 - (255 - r) * factor), int(255 - (255 - g) * factor), int(255 - (255 - b) * factor))
+
+
+def blend_colors(color1, color2, progress):
+    b1 = color1 & 255
+    g1 = (color1 >> 8) & 255
+    r1 = (color1 >> 16) & 255
+
+    b2 = color2 & 255
+    g2 = (color2 >> 8) & 255
+    r2 = (color2 >> 16) & 255
+
+    inverted_progress = 1.0 - progress
+    return RGBColor(int(inverted_progress * r1 + progress * r2), int(inverted_progress * g1 + progress * g2),
+                    int(inverted_progress * b1 + progress * b2))
 
 
 def translate(x, oldmin, oldmax, newmin, newmax):

@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+
 from input import *
 
 pin_left = 24
