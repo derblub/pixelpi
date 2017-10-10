@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    var ws = new WebSocket('ws://127.0.0.1:9010');
+    var ws = new WebSocket('ws://' + window.location.hostname + ':9010');
     ws.onopen = function(){
         enableKeys();
         $('#socket-status').removeClass('label-default label-success label-danger')
