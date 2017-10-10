@@ -1,17 +1,24 @@
 {
-  "name": "pixelpi_webinterface",
+  "name": "pixelpi",
   "version": "0.0.1",
   "description": "web-interface for pixelpi",
   "author": "Daniel Kurdoghlian <daniel.k@pushingpixels.at>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/derblub/pixelpi.git"
-  },
+  "repository": "https://github.com/derblub/pixelpi.git",
   "license": "MIT",
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-uglify": "^0.9.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-sass": "^1.0.0"
-  }
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "jquery": "^3.2.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "webpack": "^3.6.0"
+  },
+  "scripts": {
+    "build": "NODE_ENV=production webpack --display-modules --profile",
+    "dev": "NODE_ENV=development webpack --display-modules --profile"
+  },
+  "main": "index.js"
 }

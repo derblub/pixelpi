@@ -51,7 +51,7 @@ class Menu(object):
 
         self.webinterface = S.get('webinterface', 'enabled')
         if self.webinterface:
-            from server.interface import index, settings
+            from server.interface import index
             self.http_server = interface.WebInterface(interface.urls, locals())
             thread.start_new_thread(self.http_server.run, (), {})
 
@@ -134,7 +134,7 @@ class Menu(object):
         self.index = (self.index + direction + len(self.items)) % len(self.items)
         self.dir = direction
         self.start = time.clock()
-        self.end = self.start + 0.3
+        self.end = self.start + 0.1
 
     def on_key_down(self, key):
         self.items[self.index].on_key_press(key, self)
@@ -180,7 +180,8 @@ class Menu(object):
             self.brightness = min(1, 1 - ((time.clock() - start) / (end - start)))
             self.draw()
 
-        pygame.time.wait(100)
+        # pygame.time.wait(100)
+        time.sleep(0.1)
         self.reset(redraw=False)
 
     def resume_animation(self):
@@ -200,5 +201,5 @@ if __name__ == '__main__':
     menu = Menu(create_screen(), create_menu_items())
     while True:
         menu.tick()
-        # time.sleep(0.01)
-        time.sleep(0.1)
+        time.sleep(0.01)
+        # time.sleep(0.1)

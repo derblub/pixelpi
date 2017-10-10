@@ -1,25 +1,20 @@
 $(document).ready(function(){
 
+    $('body').addClass('socket-offline');
     var ws = new WebSocket('ws://' + window.location.hostname + ':9010');
     ws.onopen = function(){
         enableKeys();
-        $('#socket-status').removeClass('label-default label-success label-danger')
-            .addClass('label-success')
-            .text('online');
+        $('html').removeClass('socket-offline socket-error').addClass('socket-online');
     };
     ws.onerror = function(){
         clearScreen();
         disableKeys();
-        $('#socket-status').removeClass('label-default label-success label-danger')
-            .addClass('label-danger')
-            .text('error');
+        $('html').removeClass('socket-online socket-offline').addClass('socket-error');
     };
     ws.onclose = function(){
         clearScreen();
         disableKeys();
-        $('#socket-status').removeClass('label-default label-success label-danger')
-            .addClass('label-default')
-            .text('offline');
+        $('html').removeClass('socket-online socket-error').addClass('socket-offline');
     };
     ws.addEventListener("message", function(event) {
         var data = JSON.parse(event.data);
@@ -42,19 +37,22 @@ $(document).ready(function(){
     };
 
     var disableKeys = function(){
-        $('.send-key').attr('disabled', true);
+        $('.send-key').addClass('disabled');
     };
 
     var enableKeys = function(){
-        $('.send-key').removeAttr('disabled');
+        $('.send-key').removeClass('disabled');
     };
 
     $('body').on('click', '.send-key', function(e){
         var $this = $(this),
+            disabled = $this.hasClass('disabled'),
             key = $this.data('key'),
             json = JSON.stringify({'key': key});
         e.preventDefault();
-        ws.send(json);
+        if (!disabled && ws.readyState === ws.OPEN){
+            ws.send(json);
+        }
     });
 
 

@@ -11,8 +11,7 @@ from websocket_server import WebsocketServer
 
 S = Settings()
 urls = (
-    '/', 'index',
-    '/settings', 'settings',
+    '/', 'index'
 )
 
 
@@ -35,14 +34,6 @@ class index:
             'page': 'index',
         }
         return render_template('index.html', c)
-
-
-class settings:
-    def GET(self):
-        c = {
-            'page': 'settings',
-        }
-        return render_template('settings.html', c)
 
 
 def render_template(template_name, context):
