@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import time
 import web
 import json
 
@@ -83,6 +85,7 @@ class SocketInterface:
             'pixel': pixel
         }
         self.server.send_message_to_all(json.dumps(c))
+        time.sleep(0.1)
 
     # Called for every client connecting (after handshake)
     @staticmethod
