@@ -1,4 +1,4 @@
-from thread import start_new_thread
+import thread
 
 
 class Module(object):
@@ -18,7 +18,7 @@ class Module(object):
             return
 
         self.running = True
-        start_new_thread(self.run, ())
+        thread.start_new_thread(self.run, ())
 
         self.on_start()
 

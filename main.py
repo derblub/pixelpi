@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import sys
+
+import time
 
 from screenfactory import create_screen
-from modules.scroll_message import *
-from modules.animation import *
+from modules.scroll_message import ScrollMessage
+from modules.animation import Animation
 
 
 if __name__ == '__main__':
@@ -14,15 +15,6 @@ if __name__ == '__main__':
     Animation(s, "animations/globe")  # panned animation
     # Animation(s, "animations/tron_trailer")  # single image vertical animated
     # Animation(s, "animations/pushingpixels")  # single image
-    try:
-        while True:
-            pygame.time.wait(10)
-    except KeyboardInterrupt:
-        try:
-            sys.stdout.close()
-        except:
-            pass
-        try:
-            sys.stderr.close()
-        except:
-            pass
+
+    while True:
+        time.sleep(0.01)
