@@ -26,7 +26,6 @@ class MenuItem(object):
         arr = pygame.PixelArray(bmp)
         frame = [[int_to_color(arr[x, y]) for y in range(MenuItem.PREVIEW_SIZE)] for x in
                  range(MenuItem.PREVIEW_SIZE)]
-
         return frame
 
     def on_key_press(self, key, menu):
@@ -127,14 +126,14 @@ class FireItem(MenuItem):
 
 
 class BrightnessItem(MenuItem):
-    def get_module(self, screen):
-        pass
-
     def __init__(self, screen):
         super(BrightnessItem, self).__init__()
         self.preview_template = MenuItem.load_preview('menu/preview/brightness.bmp')
         self.screen = screen
         self.draw()
+
+    def get_module(self, screen):
+        pass
 
     def draw(self):
         self.preview = [self.preview_template[x][:] for x in range(8)]
@@ -178,6 +177,16 @@ class WitnessItem(MenuItem):
         return WitnessGame(screen)
 
 
+class ScrollMessageItem(MenuItem):
+    def __init__(self):
+        super(ScrollMessageItem, self).__init__()
+        self.preview = MenuItem.load_preview('menu/preview/scrollmessage.bmp')
+
+    def get_module(self, screen):
+        from modules.scroll_message import ScrollMessage
+        return ScrollMessage(screen, text="Hello, World!  :)", color=Color(255, 0, 0))
+
+
 def create_menu_items():
     menu_items = [
         CycleItem(),
@@ -190,7 +199,9 @@ def create_menu_items():
         PieItem(),
         MusicItem(),
         FireItem(),
-        WitnessItem()]
+        WitnessItem(),
+        ScrollMessageItem()
+    ]
 
     if platform.uname()[4][:3] == 'arm':  # if arm processor, it's most likely a rpi
         if screen.screen.instance is not None:

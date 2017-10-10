@@ -1,37 +1,64 @@
-
-html { background-color:#4d4d4d; }
-html.socket-offline { background-color: #000000; }
-html.socket-error { background-color: firebrick; }
-
-body {
+* {
   margin: 0;
   padding: 0;
-  text-align: center;
+  box-sizing: border-box;
 }
 
-table.screen {
-  border: 2px solid #000;
-  border-collapse:collapse;
-  margin: 0 auto;
+html {
+  background-color: #000;
+  &:before {
+    content: '';
+    display: block;
+    width: 1vw;
+    height: 0.5vw;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+  }
+  &.socket-offline:before { background-color: red; }
+  &.socket-online:before { background-color: lime; }
+  &.socket-error:before { background-color: orange; }
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screen {
+  position: absolute;
+  width: 18vw;
+  border: 2px solid #dddddd;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: #dddddd;
   .pixel {
-    height: 10px;
-    width: 10px;
-    border: 2px solid #000;
+    position: relative;
+    width:  6.25%;
+    border: 0;
     background-color: #000;
+    &:after {
+      content: '';
+      display: block;
+      margin-top: 100%;
+    }
   }
 }
 
+#controller {
+  width: 100%;
 
-.button { fill: #dddddd; }
-.button:active { fill: gray; }
-.fullscreen { fill: rgb(60,60,60); }
-.home {
+  .button {
+    fill: #dddddd;
+    &:active { fill: gray; }
+  }
+  .fullscreen { fill: rgb(60, 60, 60); }
+  .home {
     fill: black;
     font-size: 0.8px;
     font-family: sans-serif;
     cursor: default;
     user-select: none;
-}
-svg#controller {
-    width: 80%;
+  }
 }

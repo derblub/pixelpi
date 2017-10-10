@@ -174,71 +174,66 @@ class Pacman(Module):
         time.sleep(2.0)
         self.new_game()
 
+    def check_ghosts(self):
+        for ghost in self.ghosts:
+            if ghost.pos == self.pacman and ghost.pos != ghost.home:
+                if ghost.mode == ghost.FLEE:
+                    ghost.set_mode(ghost.GOHOME)
+                elif ghost.mode != ghost.GOHOME:
+                    self.die()
 
-def check_ghosts(self):
-    for ghost in self.ghosts:
-        if ghost.pos == self.pacman and ghost.pos != ghost.home:
-            if ghost.mode == ghost.FLEE:
-                ghost.set_mode(ghost.GOHOME)
-            elif ghost.mode != ghost.GOHOME:
-                self.die()
+    def tick(self):
+        for ghost in self.ghosts:
+            ghost.tick()
+        self.check_ghosts()
 
+        if time.clock() > self.next_step:
+            self.next_step += self.step_interval
+            self.move()
 
-def tick(self):
-    for ghost in self.ghosts:
-        ghost.tick()
-    self.check_ghosts()
+            self.draw()
+            time.sleep(0.005)
 
-    if time.clock() > self.next_step:
-        self.next_step += self.step_interval
-        self.move()
+    def on_key_down(self, key):
+        if key == input.Key.UP:
+            self.new_dir = Point(0, -1)
+        if key == input.Key.DOWN:
+            self.new_dir = Point(0, 1)
+        if key == input.Key.LEFT:
+            self.new_dir = Point(-1, 0)
+        if key == input.Key.RIGHT:
+            self.new_dir = Point(1, 0)
 
-        self.draw()
-        time.sleep(0.005)
+    def create_direction_map(self, dest):
+        distance_map = [[float("inf") for y in range(16)] for x in range(16)]
+        directions_map = [[None for y in range(16)] for x in range(16)]
 
+        directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
 
-def on_key_down(self, key):
-    if key == input.Key.UP:
-        self.new_dir = Point(0, -1)
-    if key == input.Key.DOWN:
-        self.new_dir = Point(0, 1)
-    if key == input.Key.LEFT:
-        self.new_dir = Point(-1, 0)
-    if key == input.Key.RIGHT:
-        self.new_dir = Point(1, 0)
+        to_visit = [dest]
+        visited = [[False for y in range(16)] for x in range(16)]
+        distance_map[dest.x][dest.y] = 0
 
+        while len(to_visit) > 0:
+            place = to_visit.pop(0)
 
-def create_direction_map(self, dest):
-    distance_map = [[float("inf") for y in range(16)] for x in range(16)]
-    directions_map = [[None for y in range(16)] for x in range(16)]
+            if visited[place.x][place.y]:
+                continue
+            visited[place.x][place.y] = True
 
-    directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
+            for direction in directions:
+                next = Point((place.x + direction.x + 16) % 16, (place.y + direction.y + 16) % 16)
 
-    to_visit = [dest]
-    visited = [[False for y in range(16)] for x in range(16)]
-    distance_map[dest.x][dest.y] = 0
+                if self.walls[next.y][next.x] == 0 and distance_map[next.x][next.y] > distance_map[place.x][
+                    place.y] + 1 and not visited[next.x][next.y]:
+                    distance_map[next.x][next.y] = distance_map[place.x][place.y] + 1
+                    directions_map[next.x][next.y] = Point(-direction.x, -direction.y)
+                    to_visit.append(next)
 
-    while len(to_visit) > 0:
-        place = to_visit.pop(0)
+        self.direction_maps[dest] = directions_map
 
-        if visited[place.x][place.y]:
-            continue
-        visited[place.x][place.y] = True
+    def get_direction_map(self, dest):
+        if dest not in self.direction_maps:
+            self.create_direction_map(dest)
 
-        for direction in directions:
-            next = Point((place.x + direction.x + 16) % 16, (place.y + direction.y + 16) % 16)
-
-            if self.walls[next.y][next.x] == 0 and distance_map[next.x][next.y] > distance_map[place.x][
-                place.y] + 1 and not visited[next.x][next.y]:
-                distance_map[next.x][next.y] = distance_map[place.x][place.y] + 1
-                directions_map[next.x][next.y] = Point(-direction.x, -direction.y)
-                to_visit.append(next)
-
-    self.direction_maps[dest] = directions_map
-
-
-def get_direction_map(self, dest):
-    if dest not in self.direction_maps:
-        self.create_direction_map(dest)
-
-    return self.direction_maps[dest]
+        return self.direction_maps[dest]

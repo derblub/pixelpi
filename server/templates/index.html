@@ -3,11 +3,11 @@
 
 {% block content %}
 
-    <table class="screen">
-        {% for row in range(16) %}
+    <table id="screen">
+        {% for y in range(matrix_width) %}
             <tr>
-                {% for col in range(16) %}
-                    <td id="pixel-{{ row }}-{{ col }}" class="pixel"></td>
+                {% for x in range(matrix_height) %}
+                    <td id="pixel-{{ y }}-{{ x }}" class="pixel"></td>
                 {% endfor %}
             </tr>
         {% endfor %}

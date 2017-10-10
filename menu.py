@@ -30,7 +30,8 @@ class Menu(object):
             'clock': 5,
             'pie': 6,
             'music': 7,
-            'brightness': 8,
+            'scroll_message': 8,
+            'brightness': 9,
         }
         self.start_screen = self.MENU_ITEMS_MAP[S.get('others', 'start_screen')]
         if self.start_screen is not -1:

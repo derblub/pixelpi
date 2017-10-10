@@ -1,6 +1,7 @@
 import time
 import pygame
 import numpy as np
+import input
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -25,6 +26,8 @@ class ScrollMessage(Module):
                  scroll=DEFALT_SCROLL,
                  y_offset=4):
         super(ScrollMessage, self).__init__(screen)
+
+        input.on_press.append(self.key_press)
 
         self.d = []
         self.width = self.screen.width
@@ -139,3 +142,13 @@ class ScrollMessage(Module):
     def on_start(self):
         print('\033[38;5;39mscrolling \033[38;5;208m"\033[38;5;112m' + self.text + '\033[38;5;208m"\033[0m')
         # print "shape: ", np.array(self.pixel_array).shape
+
+    def key_press(self, key):
+        if key == input.Key.UP:
+            self.move_up()
+        if key == input.Key.DOWN:
+            self.move_down()
+        if key == input.Key.LEFT:
+            self.move_left()
+        if key == input.Key.RIGHT:
+            self.move_right()

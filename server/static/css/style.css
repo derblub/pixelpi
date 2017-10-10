@@ -1,44 +1,60 @@
-html {
-  background-color: #4d4d4d; }
-
-html.socket-offline {
-  background-color: #000000; }
-
-html.socket-error {
-  background-color: firebrick; }
-
-body {
+* {
   margin: 0;
   padding: 0;
-  text-align: center; }
+  box-sizing: border-box; }
 
-table.screen {
-  border: 2px solid #000;
+html {
+  background-color: #000; }
+  html:before {
+    content: '';
+    display: block;
+    width: 1vw;
+    height: 0.5vw;
+    position: absolute;
+    top: 5px;
+    right: 15px; }
+  html.socket-offline:before {
+    background-color: red; }
+  html.socket-online:before {
+    background-color: lime; }
+  html.socket-error:before {
+    background-color: orange; }
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+#screen {
+  position: absolute;
+  width: 18vw;
+  border: 2px solid #dddddd;
   border-collapse: collapse;
-  margin: 0 auto; }
-  table.screen .pixel {
-    height: 10px;
-    width: 10px;
-    border: 2px solid #000;
+  border-spacing: 0;
+  background-color: #dddddd; }
+  #screen .pixel {
+    position: relative;
+    width: 6.25%;
+    border: 0;
     background-color: #000; }
+    #screen .pixel:after {
+      content: '';
+      display: block;
+      margin-top: 100%; }
 
-.button {
-  fill: #dddddd; }
-
-.button:active {
-  fill: gray; }
-
-.fullscreen {
-  fill: #3c3c3c; }
-
-.home {
-  fill: black;
-  font-size: 0.8px;
-  font-family: sans-serif;
-  cursor: default;
-  user-select: none; }
-
-svg#controller {
-  width: 80%; }
+#controller {
+  width: 100%; }
+  #controller .button {
+    fill: #dddddd; }
+    #controller .button:active {
+      fill: gray; }
+  #controller .fullscreen {
+    fill: #3c3c3c; }
+  #controller .home {
+    fill: black;
+    font-size: 0.8px;
+    font-family: sans-serif;
+    cursor: default;
+    user-select: none; }
 
 /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiIuL3N0YXRpYy9jc3Mvc3R5bGUuY3NzIiwic291cmNlUm9vdCI6IiJ9*/

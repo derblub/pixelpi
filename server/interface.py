@@ -31,7 +31,8 @@ class WebInterface(web.application):
 class index:
     def GET(self):
         c = {
-            'page': 'index',
+            'matrix_width': int(S.get('screen', 'matrix_width')),
+            'matrix_height': int(S.get('screen', 'matrix_height'))
         }
         return render_template('index.html', c)
 
