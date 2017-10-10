@@ -1,7 +1,9 @@
+var ReconnectingWebSocket = require('reconnecting-websocket');
+
 $(document).ready(function(){
 
     $('body').addClass('socket-offline');
-    var ws = new WebSocket('ws://' + window.location.hostname + ':9010');
+    var ws = new ReconnectingWebSocket('ws://' + window.location.hostname + ':9010');
     ws.onopen = function(){
         enableKeys();
         $('html').removeClass('socket-offline socket-error').addClass('socket-online');

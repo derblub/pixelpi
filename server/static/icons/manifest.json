@@ -1,0 +1,13 @@
+{
+    "name": "PixelPi",
+    "icons": [
+        {
+            "src": "/static/icons/android-chrome-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#ad3535",
+    "background_color": "#ad3535",
+    "display": "standalone"
+}
