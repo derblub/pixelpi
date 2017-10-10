@@ -1,4 +1,5 @@
 from abstractscreen import AbstractScreen
+from neopixel import *
 from settings import *
 
 S = Settings()
@@ -15,7 +16,6 @@ class Screen(AbstractScreen):
                  led_dma=int(S.get('screen', 'led_dma')),
                  led_invert=(True if S.get('screen', 'led_invert').lower() == 'true' else False),
                  led_brightness=int(S.get('screen', 'brightness'))):
-        from neopixel import *
         super(Screen, self).__init__(width, height)
         led_channel = 0
         led_strip = ws.WS2811_STRIP_GRB
