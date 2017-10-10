@@ -1,10 +1,10 @@
 from abstractscreen import AbstractScreen
 from settings import *
+
 try:
     from neopixel import *
 except:
     pass
-
 
 S = Settings()
 
@@ -25,7 +25,7 @@ class Screen(AbstractScreen):
         led_strip = ws.WS2811_STRIP_GRB
 
         self.strip = Adafruit_NeoPixel(width * height, led_pin, led_freq_hz, led_dma, led_invert, led_brightness,
-                                          led_channel, led_strip)
+                                       led_channel, led_strip)
 
         # pygame.display.init()  # needed for events
 
