@@ -1,6 +1,6 @@
 import time
 
-import helpers
+from helpers import *
 
 
 class AbstractScreen(object):
@@ -8,9 +8,9 @@ class AbstractScreen(object):
         self.width = width
         self.height = height
 
-        self.pixel = [[helpers.RGBColor(0, 0, 0) for y in range(height)] for x in range(width)]
+        self.pixel = [[RGBColor(0, 0, 0) for y in range(height)] for x in range(width)]
 
-    def clear(self, color=helpers.RGBColor(0, 0, 0)):
+    def clear(self, color=RGBColor(0, 0, 0)):
         self.pixel = [[color for y in range(self.height)] for x in range(self.width)]
         # for x in range(self.width):
         #     for y in range(self.height):
@@ -29,7 +29,7 @@ class AbstractScreen(object):
             progress = (time.time() - start) / duration
             if not fadein:
                 progress = 1.0 - progress
-            self.pixel = [[helpers.darken_color(frame[x][y], progress) for y in range(self.height)] for x in
+            self.pixel = [[int_to_color(darken_color(frame[x][y], progress)) for y in range(self.height)] for x in
                           range(self.width)]
             self.update()
 

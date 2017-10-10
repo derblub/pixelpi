@@ -2,6 +2,7 @@
 import web
 import json
 
+from helpers import *
 from settings import *
 from input import  press, release
 from jinja2 import Environment, FileSystemLoader
@@ -77,8 +78,17 @@ class SocketInterface:
             return self.server
 
     def tick(self):
+        pixel = [[0 for y in range(self.screen.height)] for x in range(self.screen.width)]
+
+        for x in range(self.screen.width):
+            for y in range(self.screen.height):
+                if isinstance(self.screen.pixel[x][y], int):
+                    p = int_to_color(self.screen.pixel[x][y])
+                else:
+                    p = self.screen.pixel[x][y]
+                pixel[x][y] = p
         c = {
-            'pixel': self.screen.pixel
+            'pixel': pixel
         }
         self.server.send_message_to_all(json.dumps(c))
 

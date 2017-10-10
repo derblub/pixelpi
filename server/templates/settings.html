@@ -47,10 +47,7 @@
                 {% for row in range(16) %}
                   <tr>
                     {% for col in range(16) %}
-                      <td id="pixel-{{ row }}-{{ col }}" class="pixel"
-                          style="background-color:#000000;">
-                        <input type="color" pattern="#[a-f0-9]{6}" placeholder="#000000" value="#000000">
-                      </td>
+                      <td id="pixel-{{ row }}-{{ col }}" class="pixel" style="background-color:#000000;"></td>
                     {% endfor %}
                   </tr>
                 {% endfor %}
@@ -58,30 +55,27 @@
             </div>
           </div>
 
-          <div class="form-group form-group-sm">
-            <label class="col-xs-3 control-label"> </label>
-            <div class="col-xs-9">
+        <div class="col-xs-12">
 
-                <svg id="controller" viewbox="0.7 0 16.65 7.4">
-                    <path d="M3.8,4 l-1,-1 l-2,0 l0,2 l2,0" class="button send-key" data-key="13"/>
-                    <path d="M4,3.8 l-1,-1 l0,-2 l2,0 l0,2" class="button send-key" data-key="11"/>
-                    <path d="M4.2,4 l1,-1 l2,0 l0,2 l-2,0" class="button send-key" data-key="14"/>
-                    <path d="M4,4.2 l-1,1 l0,2 l2,0 l0,-2" class="button send-key" data-key="12"/>
+            <svg id="controller" viewbox="0.7 0 16.65 7.4">
+                <path d="M3.8,4 l-1,-1 l-2,0 l0,2 l2,0" class="button send-key" data-key="13"/>
+                <path d="M4,3.8 l-1,-1 l0,-2 l2,0 l0,2" class="button send-key" data-key="11"/>
+                <path d="M4.2,4 l1,-1 l2,0 l0,2 l-2,0" class="button send-key" data-key="14"/>
+                <path d="M4,4.2 l-1,1 l0,2 l2,0 l0,-2" class="button send-key" data-key="12"/>
 
-                    <circle cx="12" cy="4" r="1.25" class="button send-key" data-key="1"/>
-                    <circle cx="16" cy="4" r="1.25" class="button send-key" data-key="3"/>
-                    <circle cx="14" cy="2" r="1.25" class="button send-key" data-key="4"/>
-                    <circle cx="14" cy="6" r="1.25" class="button send-key" data-key="2"/>
+                <circle cx="12" cy="4" r="1.25" class="button send-key" data-key="1"/>
+                <circle cx="16" cy="4" r="1.25" class="button send-key" data-key="3"/>
+                <circle cx="14" cy="2" r="1.25" class="button send-key" data-key="4"/>
+                <circle cx="14" cy="6" r="1.25" class="button send-key" data-key="2"/>
 
-                    <g class="button send-key" data-key="10">
-                        <rect x="7" y="0.4" rx="0.75" ry="0.75" width="4" height="1.5"/>
-                        <text x="9" y="1.45" text-anchor="middle" class="home">HOME</text>
-                    </g>
+                <g class="button send-key" data-key="10">
+                    <rect x="7" y="0.4" rx="0.75" ry="0.75" width="4" height="1.5"/>
+                    <text x="9" y="1.45" text-anchor="middle" class="home">HOME</text>
+                </g>
 
-                    <rect x="8.5" y="6" rx="0.15" ry="0.15" width="1" height="1" class="button fullscreen"/>
-                </svg>
-            </div>
-          </div>
+                <rect x="8.5" y="6" rx="0.15" ry="0.15" width="1" height="1" class="button fullscreen"/>
+            </svg>
+        </div>
 
         </form>
 

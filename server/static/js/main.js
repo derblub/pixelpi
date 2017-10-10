@@ -1,10 +1,4 @@
 $(document).ready(function(){
-    $('.pixel').on('change', 'input', function(){
-        var $this = $(this),
-            value = $this.val();
-        $this.parent('td').css('background-color', value);
-    });
-
 
     var ws = new WebSocket('ws://127.0.0.1:9010');
     ws.onopen = function(){
@@ -36,15 +30,15 @@ $(document).ready(function(){
     var updateScreen = function(pixel){
       for (var x=0; x<pixel.length; x++){  // rows
           for (var y=0; y<pixel[x].length; y++){  // col
-              var id = '#pixel-'+y+'-'+x+' input',
+              var id = '#pixel-'+y+'-'+x,
                   p = pixel[x][y];
-              $(id).val(rgbToHex(p[0], p[1], p[2])).trigger('change');
+              $(id).css('background-color', rgbToHex(p[0], p[1], p[2]));
           }
       }
     };
 
     var clearScreen = function(){
-      $('.pixel input').val('#000000').trigger('change');
+      $('.pixel').css('background-color', '#000000');
     };
 
     var disableKeys = function(){

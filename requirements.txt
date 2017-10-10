@@ -1,6 +1,7 @@
 blessings==1.6
 Jinja2==2.9.6
 MarkupSafe==1.0
+noise==1.2.2
 numpy==1.13.3
 olefile==0.44
 Pillow==4.3.0
@@ -9,3 +10,4 @@ PyAudio==0.2.11
 pygame==1.9.3
 pyserial==3.4
 web.py==0.38
+websocket-server==0.4

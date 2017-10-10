@@ -45,8 +45,8 @@ class Clock(Module):
 
         hue = (time.clock() * 0.01) % 1
         hue2 = (time.clock() * 0.01 + .75) % 1
-        digit_color = hsv_to_color(hue, 1, 1)
-        colon_color = hsv_to_color(hue2, 1, 1)
+        digit_color = int_to_color(hsv_to_color(hue, 1, 1))
+        colon_color = int_to_color(hsv_to_color(hue2, 1, 1))
 
         self.draw_digit(now.minute % 10, Point(13, 5), digit_color)
         self.draw_digit(math.floor(now.minute / 10), Point(9, 5), digit_color)

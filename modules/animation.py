@@ -39,7 +39,7 @@ class Animation(Module):
         else:
             self.interval = interval
 
-        self.config = self.load_config(self.folder)
+        self.config = self.load_config()
         self.init_defaults()
 
         try:
@@ -59,6 +59,7 @@ class Animation(Module):
             self.start()
 
     def load_images(self):
+        self.frames = []
         i = 0
         while os.path.isfile(self.folder + str(i) + '.bmp'):
             try:
@@ -72,21 +73,18 @@ class Animation(Module):
             self.frames.append(pixels.tolist())
             i += 1
 
-    @staticmethod
-    def is_single_file(folder):
-        return os.path.isfile(folder + '0.bmp') and not os.path.isfile(folder + '1.bmp')
+    def is_single_file(self):
+        return os.path.isfile(self.folder + '0.bmp') and not os.path.isfile(self.folder + '1.bmp')
 
-    @staticmethod
-    def config_exists(folder):
-        return os.path.isfile(folder + 'config.ini')
+    def config_exists(self):
+        return os.path.isfile(self.folder + 'config.ini')
 
-    @staticmethod
-    def load_config(folder):
+    def load_config(self):
         try:
             cfg = ConfigParser.ConfigParser()
-            cfg.read(folder + 'config.ini')
+            cfg.read(self.folder + 'config.ini')
         except(ConfigParser.MissingSectionHeaderError, ConfigParser.ParsingError):
-            print('Error parsing ' + folder + 'config.ini')
+            print('Error parsing ' + self.folder + 'config.ini')
             cfg = False
 
         return cfg
@@ -136,7 +134,7 @@ class Animation(Module):
             ox = self.w / -2 + 8
             oy = self.h / -2 - 8
 
-        if self.is_single_file(self.folder):
+        if self.is_single_file():
             if self.moveX == 0 and self.moveY == 0:
                 # stop animation
                 self.stop()
@@ -176,7 +174,7 @@ class Animation(Module):
         self.offset_x = ox
         self.offset_y = oy
 
-        return frame
+        return frame.tolist()
 
     def tick(self):
         # for animations with multiple images
@@ -184,8 +182,8 @@ class Animation(Module):
             self.current_file = 0
 
         # parse config and do frame transformations
-        # shifted_f = self.shift_frame(self.frames[self.current_file])
-        shifted_f = self.frames[self.current_file]
+        shifted_f = self.shift_frame(self.frames[self.current_file])
+        # shifted_f = self.frames[self.current_file]
 
         self.screen.pixel = shifted_f
         self.screen.update()

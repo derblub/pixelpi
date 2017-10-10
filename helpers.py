@@ -28,25 +28,30 @@ Point = collections.namedtuple('Point', 'x y')
 
 def hsv_to_color(hue, saturation, value):
     t = colorsys.hsv_to_rgb(hue, saturation, value)
-    return RGBColor(int(t[0] * 255), int(t[1] * 255), int(t[2] * 255))
+    return Color(int(t[0] * 255), int(t[1] * 255), int(t[2] * 255))
 
 
 def rgb_to_int(c):
-    return RGBColor(c.r, c.g, c.b)
+    try:
+        return Color(c.r, c.g, c.b)
+    except:
+        return Color(c[0], c[1], c[2])
 
 
 def darken_color(color, factor):  # 0 is darkest, 1 is no change
+    if not isinstance(color, int):
+        color = rgb_to_int(color)
     b = color & 255
     g = (color >> 8) & 255
     r = (color >> 16) & 255
-    return RGBColor(int(r * factor), int(g * factor), int(b * factor))
+    return Color(int(r * factor), int(g * factor), int(b * factor))
 
 
 def brighten_color(color, factor):  # 0 is brightest, 1 is no change
     b = color & 255
     g = (color >> 8) & 255
     r = (color >> 16) & 255
-    return RGBColor(int(255 - (255 - r) * factor), int(255 - (255 - g) * factor), int(255 - (255 - b) * factor))
+    return Color(int(255 - (255 - r) * factor), int(255 - (255 - g) * factor), int(255 - (255 - b) * factor))
 
 
 def blend_colors(color1, color2, progress):
@@ -59,8 +64,8 @@ def blend_colors(color1, color2, progress):
     r2 = (color2 >> 16) & 255
 
     inverted_progress = 1.0 - progress
-    return RGBColor(int(inverted_progress * r1 + progress * r2), int(inverted_progress * g1 + progress * g2),
-                    int(inverted_progress * b1 + progress * b2))
+    return Color(int(inverted_progress * r1 + progress * r2), int(inverted_progress * g1 + progress * g2),
+                 int(inverted_progress * b1 + progress * b2))
 
 
 def translate(x, oldmin, oldmax, newmin, newmax):
