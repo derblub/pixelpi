@@ -1,5 +1,6 @@
 from abstractscreen import AbstractScreen
 from settings import *
+from helpers import *
 
 try:
     from neopixel import *
@@ -48,10 +49,10 @@ class Screen(AbstractScreen):
             for y in range(self.height):
                 if y % 2 == 0:
                     # self.strip.setPixelColor(y * self.width + x, self.pixel[x][y])
-                    self.strip.setPixelColor(y * self.width + x, mirrored[x][y])
+                    self.strip.setPixelColor(y * self.width + x, rgb_to_int(mirrored[x][y]) if not isinstance(mirrored[x][y], int) else mirrored[x][y])
                 else:
                     # self.strip.setPixelColor(y * self.width + self.width - 1 - x, self.pixel[x][y])
-                    self.strip.setPixelColor(y * self.width + self.width - 1 - x, mirrored[x][y])
+                    self.strip.setPixelColor(y * self.width + self.width - 1 - x, rgb_to_int(mirrored[x][y]) if not isinstance(mirrored[x][y], int) else mirrored[x][y])
         self.strip.show()
 
     def update_brightness(self):
