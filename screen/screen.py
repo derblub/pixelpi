@@ -1,6 +1,10 @@
 from abstractscreen import AbstractScreen
-from neopixel import *
 from settings import *
+try:
+    from neopixel import *
+except:
+    pass
+
 
 S = Settings()
 
